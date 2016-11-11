@@ -10,8 +10,22 @@
 #define functions_h
 
 #include "game.h"
-#include <stdio.h>
 
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+
+// INITS / DEINITS
 void initGame(Game* game);
+
+// GAME LOGIC
+char* createHeader(const Game *game);
+
+
+// MAINTENANCE FUNCTIONs
+
+int power(int base, int exponent);
+void numberToCharacter(const unsigned char number, char* string);
+char* numberToString(int number, char *string);
 
 #endif /* functions_h */

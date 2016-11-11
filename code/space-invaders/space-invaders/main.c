@@ -7,14 +7,17 @@
 //
 
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "functions.h"
 #include "game.h"
-
+#include "constants.h"
 
 int main(int argc, const char * argv[]) {
     Game game;
-
-    initGame(&game);
+    char* header;
     
+    initGame(&game);
+    header = createHeader(&game);
+    printf("%s\n", header);
 }

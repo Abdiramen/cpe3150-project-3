@@ -9,5 +9,9 @@
 #ifndef constants_h
 #define constants_h
 
+static const char NAME[] = "Text Invaders";
+
+static const char SCORE[] = "    Score: ";
+static const char LIVES[] = "    Lives: ";
 
 #endif /* constants_h */
