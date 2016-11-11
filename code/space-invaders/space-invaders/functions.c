@@ -47,12 +47,17 @@ char* createHeader(const Game *game) {
         workingSize -= strlen(NAME);
     }
     
-    if (workingSize > strlen(tempString) + 1) { // +1 because extra life
+    
+    if (workingSize > strlen(LIVES) + 2) { // +1 because extra life
         strcat(headerLine, LIVES);
         strcat(headerLine, numberToString(game -> lives, tempString));
-       
+        
     }
     
+    if (workingSize > strlen(SCORE) + 2) { // +1 because extra life
+        strcat(headerLine, SCORE);
+        strcat(headerLine, numberToString(game -> score, tempString));
+    }
     
     return headerLine;
 }
