@@ -14,4 +14,6 @@ static const char NAME[] = "Text Invaders";
 static const char SCORE[] = "    Score: ";
 static const char LIVES[] = "    Lives: ";
 
+static const char asciiShooter[2][6] = { " mAm " , "MAZAM" };
+
 #endif /* constants_h */

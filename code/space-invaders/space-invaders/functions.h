@@ -10,20 +10,22 @@
 #define functions_h
 
 #include "game.h"
+#include "point.h"
 
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 
+
 // INITS / DEINITS
 void initGame(Game* game);
 
-// GAME LOGIC
+// DRAWING LOGIC
 char* createHeader(const Game *game);
+char** drawShooter(const CartesianPoint center, const Game *game);
 
 
-// MAINTENANCE FUNCTIONs
-
+// MAINTENANCE FUNCTIONS
 int power(int base, int exponent);
 void numberToCharacter(const unsigned char number, char* string);
 char* numberToString(int number, char *string);

@@ -24,6 +24,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		4917B61D1DD664B800A85E53 /* point.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = point.h; sourceTree = "<group>"; };
 		493CFA4B1DD5152200AF44C0 /* space-invaders */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "space-invaders"; sourceTree = BUILT_PRODUCTS_DIR; };
 		493CFA4E1DD5152200AF44C0 /* main.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
 		493CFA561DD52F3700AF44C0 /* functions.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = functions.c; sourceTree = "<group>"; };
@@ -66,6 +67,7 @@
 				493CFA591DD54F0F00AF44C0 /* game.h */,
 				493CFA561DD52F3700AF44C0 /* functions.c */,
 				493CFA571DD52F3700AF44C0 /* functions.h */,
+				4917B61D1DD664B800A85E53 /* point.h */,
 				493CFA5A1DD5703D00AF44C0 /* constants.h */,
 			);
 			path = "space-invaders";
@@ -256,6 +258,7 @@
 				493CFA541DD5152200AF44C0 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

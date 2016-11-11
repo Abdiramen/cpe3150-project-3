@@ -9,6 +9,7 @@
 #include "functions.h"
 #include "constants.h"
 #include "game.h"
+#include "point.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -29,15 +30,15 @@ void initGame(Game* game) {
     game -> lives = 3;
     game -> score = 0;
     
-    game -> gameBoard = malloc(game -> height * sizeof(char));
-    for (int i = 0; i < game -> width; i++) {
-        game -> gameBoard[i] = malloc(game -> width * sizeof(char));
+    game -> gameBoard = malloc(game -> width * sizeof(char));
+    for (int i = 0; i < game -> height; i++) {
+        game -> gameBoard[i] = malloc(game -> height * sizeof(char));
     }
 }
 
 char* createHeader(const Game *game) {
     static char* headerLine = NULL;
-    unsigned char i, workingSize = game -> width; // working size is to keep track how much room is left for the header line
+    unsigned char workingSize = game -> width; // working size is to keep track how much room is left for the header line
     char tempString[2];
     
     headerLine = (char*)malloc(game -> width * sizeof(char));
@@ -48,18 +49,47 @@ char* createHeader(const Game *game) {
     }
     
     
-    if (workingSize > strlen(LIVES) + 2) { // +1 because extra life
+    if (workingSize > strlen(LIVES) + sizeof(tempString)) {
         strcat(headerLine, LIVES);
         strcat(headerLine, numberToString(game -> lives, tempString));
-        
+        workingSize -= strlen(NAME);
     }
     
-    if (workingSize > strlen(SCORE) + 2) { // +1 because extra life
+    if (workingSize > strlen(SCORE) + sizeof(tempString)) {
         strcat(headerLine, SCORE);
         strcat(headerLine, numberToString(game -> score, tempString));
+        workingSize -= strlen(NAME);
     }
     
     return headerLine;
+}
+
+// Note: the center actually ignores height. ¯\_(ツ)_/¯
+char** drawShooter(const CartesianPoint center, const Game *game) {
+    const unsigned char width = sizeof(*asciiShooter);
+    const unsigned char height = sizeof(asciiShooter) / width; // area = height*width => area/width = height
+    
+    char** shooterAscii = NULL;
+    unsigned char i, j, shooterCounter;
+    
+    shooterAscii = malloc(game -> width * sizeof(char));
+    for (int i = 0; i < height; i++) {
+        shooterAscii[i] = malloc(height * sizeof(char));
+    }
+    
+    for (j = 0; j < height; j++) {
+        shooterCounter = 0;
+        for (i = 0; i < game -> width; i++) {
+            if (i + (width - 1)/2.0 >= center.x && i - (width - 1)/2.0 <= center.x ) { // -1 because used sizeof for width calculation and that includes terminating character
+                shooterAscii[j][i] = asciiShooter[j][shooterCounter];
+                shooterCounter++;
+            } else {
+                shooterAscii[j][i] = ' ';
+            }
+        }
+    }
+    
+    return shooterAscii;
 }
 
 int power(int base, int exponent) {
