@@ -21,8 +21,14 @@ int main(int argc, const char * argv[]) {
     char** footer;
     
     CartesianPoint center;
-    
+
     initGame(&game);
+    
     header = createHeader(&game);
     footer = drawShooter(center, &game);
+    
+    
+    free(header);
+    free(footer);
+    free(game.gameBoard);
 }

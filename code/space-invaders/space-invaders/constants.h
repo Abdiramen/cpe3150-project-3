@@ -14,6 +14,58 @@ static const char NAME[] = "Text Invaders";
 static const char SCORE[] = "    Score: ";
 static const char LIVES[] = "    Lives: ";
 
-static const char asciiShooter[2][6] = { " mAm " , "MAZAM" };
+// These are borrowwed from https://github.com/macdice/ascii-invaders/blob/master/invaders.c
+static const char *asciiShooter[] = {
+    " mAm " ,
+    "MAZAM" };
+
+static const char *alienBlank =  "      ";
+static const char *smallInvaderOne[] = {
+    " {@@} ",
+    " /\"\"\\ " };
+    
+static const char *smallInvaderTwo[] = {
+    " {@@} ",
+    "  \\/  " };
+
+static const char *mediumInvaderOne[] = {
+    " /MM\\ ",
+    " |~~| " };
+
+
+static const char *mediumInvaderTwo[] = {
+    " /MM\\ ",
+    " \\~~/ ",
+    "      " };
+
+static const char *largeInvaderOne[] = {
+    " dOOb ",
+    " ^/\\^ " };
+
+static const char *largeInvaderTwo[] = {
+    " dOOb ",
+    " ~||~ " };
+
+
+static const char *ufo[] = {
+    "_/MM\\_",
+    "qWAAWp" };
+
+static const char *gunnerExplode[]  = {
+    " ,' %  ",
+    " ;&+,! ",
+    " -,+$! ",
+    " +  ^~ " };
+
+static const char *alienExplode[] = {
+    " \\||/ ",
+    " /||\\ ",
+    "      " };
+
+static const char *shelter[] = {
+    "/MMMMM\\",
+    "MMMMMMM",
+    "MMM MMM" };
+
 
 #endif /* constants_h */

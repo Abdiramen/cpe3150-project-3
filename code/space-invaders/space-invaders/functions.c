@@ -41,7 +41,7 @@ char* createHeader(const Game *game) {
     unsigned char workingSize = game -> width; // working size is to keep track how much room is left for the header line
     char tempString[2];
     
-    headerLine = (char*)malloc(game -> width * sizeof(char));
+    headerLine = malloc(game -> width * sizeof(char));
     
     if (workingSize > strlen(NAME)) {
         strcat(headerLine, NAME);
@@ -80,7 +80,11 @@ char** drawShooter(const CartesianPoint center, const Game *game) {
     for (j = 0; j < height; j++) {
         shooterCounter = 0;
         for (i = 0; i < game -> width; i++) {
-            if (i + (width - 1)/2.0 >= center.x && i - (width - 1)/2.0 <= center.x ) { // -1 because used sizeof for width calculation and that includes terminating character
+            
+            // the if determines if the shooter should be drawn, and it works like so:
+            // if it's in the range of 1/2width on either side of the center, then it's a match
+            // -1 because used sizeof for width calculation and that includes terminating character
+            if (i + (width - 1)/2.0 >= center.x && i - (width - 1)/2.0 <= center.x ) {
                 shooterAscii[j][i] = asciiShooter[j][shooterCounter];
                 shooterCounter++;
             } else {
