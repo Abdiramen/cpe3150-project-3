@@ -67,7 +67,7 @@ char* createHeader(const Game *game) {
 // Note: the center actually ignores height. ¯\_(ツ)_/¯
 char** drawShooter(const CartesianPoint center, const Game *game) {
     const unsigned char width = sizeof(*gunner);
-    const unsigned char height = sizeof(gunner) / width; // area = height*width => area/width = height
+    const unsigned char height = sizeof(gunner) / width; //works like stringHeight, but can't use it because incompatible pointers
     
     char** shooterAscii = NULL;
     unsigned char i, j, shooterCounter;
@@ -114,4 +114,10 @@ char* numberToString(int number, char *string) {
 }
 
 
+unsigned char stringHeight(char** string) {
+    // so sizeof returns effectively the area
+    // and sizeof returns the width
+    // area/width = height. Woo!
+    return sizeof(string)/sizeof(*string);
+}
 

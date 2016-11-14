@@ -17,7 +17,7 @@
 int main(int argc, const char * argv[]) {
     Game game;
     CartesianPoint center;
-    center.x = 4;
+    center.x = 25;
     
     char* header;
     char** footer;
@@ -29,9 +29,9 @@ int main(int argc, const char * argv[]) {
     header = createHeader(&game);
     footer = drawShooter(center, &game);
     
-    printf("%s\n", header);
+    printf("%d\n", game.width);
     
-    for (i = 0; i < strlen(*footer); i++) {
+    for (i = 0; i < stringHeight(footer) + 1; i++) {
         printf("%s\n", footer[i]);
     }
     
