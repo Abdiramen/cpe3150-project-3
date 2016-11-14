@@ -16,17 +16,24 @@
 
 int main(int argc, const char * argv[]) {
     Game game;
+    CartesianPoint center;
+    center.x = 4;
     
     char* header;
     char** footer;
     
-    CartesianPoint center;
-
+    unsigned char i;
+    
     initGame(&game);
     
     header = createHeader(&game);
     footer = drawShooter(center, &game);
     
+    printf("%s\n", header);
+    
+    for (i = 0; i < strlen(*footer); i++) {
+        printf("%s\n", footer[i]);
+    }
     
     free(header);
     free(footer);

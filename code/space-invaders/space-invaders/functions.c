@@ -66,8 +66,8 @@ char* createHeader(const Game *game) {
 
 // Note: the center actually ignores height. ¯\_(ツ)_/¯
 char** drawShooter(const CartesianPoint center, const Game *game) {
-    const unsigned char width = sizeof(*asciiShooter);
-    const unsigned char height = sizeof(asciiShooter) / width; // area = height*width => area/width = height
+    const unsigned char width = sizeof(*gunner);
+    const unsigned char height = sizeof(gunner) / width; // area = height*width => area/width = height
     
     char** shooterAscii = NULL;
     unsigned char i, j, shooterCounter;
@@ -85,7 +85,7 @@ char** drawShooter(const CartesianPoint center, const Game *game) {
             // if it's in the range of 1/2width on either side of the center, then it's a match
             // -1 because used sizeof for width calculation and that includes terminating character
             if (i + (width - 1)/2.0 >= center.x && i - (width - 1)/2.0 <= center.x ) {
-                shooterAscii[j][i] = asciiShooter[j][shooterCounter];
+                shooterAscii[j][i] = gunner[j][shooterCounter];
                 shooterCounter++;
             } else {
                 shooterAscii[j][i] = ' ';

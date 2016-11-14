@@ -15,7 +15,7 @@ static const char SCORE[] = "    Score: ";
 static const char LIVES[] = "    Lives: ";
 
 // These are borrowwed from https://github.com/macdice/ascii-invaders/blob/master/invaders.c
-static const char *asciiShooter[] = {
+static const char *gunner[] = {
     " mAm " ,
     "MAZAM" };
 
