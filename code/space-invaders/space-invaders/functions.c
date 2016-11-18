@@ -26,11 +26,11 @@ void initGame(Game* game) {
     game -> height = w.ws_row;
     game -> width = w.ws_col;
     
-    game -> level = 0;
+    game -> level = 1;
     game -> lives = 3;
     game -> score = 0;
     
-    game -> gameBoard = malloc(game -> width * sizeof(char));
+    game -> gameBoard = malloc(game -> width * sizeof(char*));
     for (int i = 0; i < game -> height; i++) {
         game -> gameBoard[i] = malloc(game -> height * sizeof(char));
     }
@@ -72,7 +72,7 @@ char** drawShooter(const CartesianPoint center, const Game *game) {
     char** shooterAscii = NULL;
     unsigned char i, j, shooterCounter;
     
-    shooterAscii = malloc(game -> width * sizeof(char));
+    shooterAscii = malloc(game -> width * sizeof(char*));
     for (int i = 0; i < height; i++) {
         shooterAscii[i] = malloc(height * sizeof(char));
     }
@@ -96,6 +96,49 @@ char** drawShooter(const CartesianPoint center, const Game *game) {
     return shooterAscii;
 }
 
+char** drawGame(Game *game) {
+    char** aliensAndShields = NULL;
+    unsigned char numberOfAliens;
+    const unsigned char shelterHeight = strlen(*shelter);
+    
+    const unsigned char numberOfShelters = game -> width / (strlen(shelter[0]) + 2.0); // the extra is for space to the left and right
+    const unsigned char spaceLeftOverFromShelter = game -> width % (strlen(shelter[0]) + 2);
+    const unsigned char height = game -> height - 1 + sizeof(gunner)/sizeof(*gunner); // read string height to figure out how this works
+    // we subtract 1 for the header string and the gunner height becuase this is this the "working canvas"
+    
+    unsigned char i, j;
+    
+    if (game -> currentNumberOfAliens == 0) {
+        game -> currentNumberOfAliens = game -> level;
+        numberOfAliens = game -> level;
+    } else {
+        numberOfAliens = game -> currentNumberOfAliens;
+    }
+    
+    // ERROR IS HERE
+    aliensAndShields = malloc(game -> width * sizeof(char*));
+    for (int i = 0; i < height; i++) {
+        aliensAndShields[i] = malloc(height * sizeof(char));
+    }
+    
+//    shooterAscii = malloc(game -> width * sizeof(char));
+//    for (int i = 0; i < height; i++) {
+//        shooterAscii[i] = malloc(height * sizeof(char));
+//    }
+    
+    // Draw Sheilds First
+    // i = row, j = column
+    //
+    // We add the space left over from the shelter because
+//    for (i = strlen(*aliensAndShields) + spaceLeftOverFromShelter / 2.0; i < shelterHeight - spaceLeftOverFromShelter / 2.0; i++) {
+//        for (j = 0; j < game -> width; j++) {
+//            aliensAndShields[i][j] = shelter[i][j % strlen(*shelter)];
+//        }
+//    }
+    
+    return aliensAndShields;
+}
+
 int power(int base, int exponent) {
     if (exponent == 0) {
         return 1;
@@ -105,7 +148,7 @@ int power(int base, int exponent) {
 }
 
 char* numberToString(int number, char *string) {
-    if(string == NULL) {
+    if (string == NULL) {
         return NULL;
     }
     
@@ -118,6 +161,9 @@ unsigned char stringHeight(char** string) {
     // so sizeof returns effectively the area
     // and sizeof returns the width
     // area/width = height. Woo!
+    if (string == NULL) {
+        return 0; // To prevent division by zero
+    }
     return sizeof(string)/sizeof(*string);
 }
 

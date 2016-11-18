@@ -20,7 +20,7 @@ int main(int argc, const char * argv[]) {
     center.x = 25;
     
     char* header;
-    char** footer;
+    char** footer, **gameboard;
     
     unsigned char i;
     
@@ -28,14 +28,22 @@ int main(int argc, const char * argv[]) {
     
     header = createHeader(&game);
     footer = drawShooter(center, &game);
+    gameboard = drawGame(&game);
     
-    printf("%d\n", game.width);
+    printf("%s\n", header);
     
+    for (i = 0; i < stringHeight(gameboard); i++) {
+        printf("%s\n", gameboard[i]);
+    }
+
     for (i = 0; i < stringHeight(footer) + 1; i++) {
         printf("%s\n", footer[i]);
     }
     
+    
+    
     free(header);
     free(footer);
+    free(gameboard);
     free(game.gameBoard);
 }

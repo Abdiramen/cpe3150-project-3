@@ -1,4 +1,4 @@
-TARGET = prog
+TARGET = build
 LIBS = -lm
 CC = gcc
 CFLAGS = -g -Wall

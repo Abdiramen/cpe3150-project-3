@@ -10,7 +10,7 @@
 #define game_h
 
 typedef struct Game {
-    unsigned char lives, level, score;
+    unsigned char lives, level, score, currentNumberOfAliens;
     int width, height;
     char** gameBoard;
 } Game;
