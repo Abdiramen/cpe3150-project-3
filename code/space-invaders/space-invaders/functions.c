@@ -19,6 +19,7 @@
 #include <unistd.h>
 
 
+
 void initGame(Game* game) {
     struct winsize w;
     ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
@@ -71,7 +72,7 @@ char** drawShooter(const CartesianPoint center, const Game *game) {
     
     char** shooterAscii = NULL;
     unsigned char i, j, shooterCounter;
-    
+
     shooterAscii = malloc(game -> width * sizeof(char*));
     for (int i = 0; i < height; i++) {
         shooterAscii[i] = malloc(height * sizeof(char));
@@ -84,15 +85,31 @@ char** drawShooter(const CartesianPoint center, const Game *game) {
             // the if determines if the shooter should be drawn, and it works like so:
             // if it's in the range of 1/2width on either side of the center, then it's a match
             // -1 because used sizeof for width calculation and that includes terminating character
-            if (i + (width - 1)/2.0 >= center.x && i - (width - 1)/2.0 <= center.x ) {
+            if (i + strlen(*gunner)/2.0 >= center.x && i - strlen(*gunner)/2.0 <= center.x ) {
                 shooterAscii[j][i] = gunner[j][shooterCounter];
                 shooterCounter++;
             } else {
                 shooterAscii[j][i] = ' ';
             }
         }
-    }
+        shooterAscii[j][i] = '\0';
+        
+        /* 
+         Error Here
+         
+         Essentially, the first line gets modified, even though there is nothing above that should mutate it.
+         Don't know why, don't know how.
+         
+         There are two lines below that print out the array, uncommenting the first one should show that the first line gets modified to.         
+         */
+//        printf("%s\n", shooterAscii[0]); // This prints out the 0th line everytime. However, it randomly changes.
+//        printf("%s\n", shooterAscii[j]); // This prints out the line that is currently being written to
     
+    }
+
+   
+    
+
     return shooterAscii;
 }
 
