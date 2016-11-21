@@ -31,9 +31,9 @@ void initGame(Game* game) {
     game -> lives = 3;
     game -> score = 0;
     
-    game -> gameBoard = malloc(game -> width * sizeof(char*));
-    for (int i = 0; i < game -> height; i++) {
-        game -> gameBoard[i] = malloc(game -> height * sizeof(char));
+    game -> gameBoard = malloc(game -> height * sizeof(char*));
+    for (int i = 0; i < game -> width; i++) {
+        game -> gameBoard[i] = malloc(game -> width * sizeof(char));
     }
 }
 
@@ -45,7 +45,7 @@ char* createHeader(const Game *game) {
     headerLine = malloc(game -> width * sizeof(char));
     
     if (workingSize > strlen(NAME)) {
-        strcat(headerLine, NAME);
+        strcpy(headerLine, NAME);
         workingSize -= strlen(NAME);
     }
     
@@ -73,14 +73,14 @@ char** drawShooter(const CartesianPoint center, const Game *game) {
     char** shooterAscii = NULL;
     unsigned char i, j, shooterCounter;
 
-    shooterAscii = malloc(game -> width * sizeof(char*));
-    for (int i = 0; i < height; i++) {
-        shooterAscii[i] = malloc(height * sizeof(char));
+    shooterAscii = malloc(height * sizeof(char*));
+    for (i = 0; i < game -> width; i++) {
+        shooterAscii[i] = malloc(game -> width * sizeof(char));
     }
     
     for (j = 0; j < height; j++) {
         shooterCounter = 0;
-        for (i = 0; i < game -> width; i++) {
+        for (i = 0; i < game -> width - 1; i++) {
             
             // the if determines if the shooter should be drawn, and it works like so:
             // if it's in the range of 1/2width on either side of the center, then it's a match
@@ -93,18 +93,6 @@ char** drawShooter(const CartesianPoint center, const Game *game) {
             }
         }
         shooterAscii[j][i] = '\0';
-        
-        /* 
-         Error Here
-         
-         Essentially, the first line gets modified, even though there is nothing above that should mutate it.
-         Don't know why, don't know how.
-         
-         There are two lines below that print out the array, uncommenting the first one should show that the first line gets modified to.         
-         */
-//        printf("%s\n", shooterAscii[0]); // This prints out the 0th line everytime. However, it randomly changes.
-//        printf("%s\n", shooterAscii[j]); // This prints out the line that is currently being written to
-    
     }
 
    
