@@ -30,45 +30,41 @@ void initGame(Game* game) {
     game -> score = 0;
 }
 
-char* createHeader(const Game *game) {
-    static char* headerLine;
+void createHeader(const Game *game, char** headerLine) {
     unsigned char workingSize = game -> width; // working size is to keep track how much room is left for the header line
     char tempString[2];
     
-    headerLine = malloc(game -> width * sizeof(char));
+    *headerLine = malloc(game -> width * sizeof(char));
     
     if (workingSize > strlen(NAME)) {
-        strcpy(headerLine, NAME);
+        strcpy(*headerLine, NAME);
         workingSize -= strlen(NAME);
     }
     
     
     if (workingSize > strlen(LIVES) + sizeof(tempString)) {
-        strcat(headerLine, LIVES);
-        strcat(headerLine, numberToString(game -> lives, tempString));
+        strcat(*headerLine, LIVES);
+        strcat(*headerLine, numberToString(game -> lives, tempString));
         workingSize -= strlen(NAME);
     }
     
     if (workingSize > strlen(SCORE) + sizeof(tempString)) {
-        strcat(headerLine, SCORE);
-        strcat(headerLine, numberToString(game -> score, tempString));
+        strcat(*headerLine, SCORE);
+        strcat(*headerLine, numberToString(game -> score, tempString));
         workingSize -= strlen(NAME);
     }
-    
-    return headerLine;
 }
 
 // Note: the center actually ignores height. ¯\_(ツ)_/¯
-char** drawShooter(const CartesianPoint center, const Game *game) {
+void drawShooter(const CartesianPoint center, const Game *game, char*** shooterAscii) {
     const unsigned char width = sizeof(*gunner);
     const unsigned char height = sizeof(gunner) / width; //works like stringHeight, but can't use it because incompatible pointers
     
-    char** shooterAscii;
     int i, j, shooterCounter;
 
-    shooterAscii = malloc(height * sizeof(char*));
-    for (i = 0; i < game -> width; i++) {
-        shooterAscii[i] = malloc(game -> width * sizeof(char));
+    *shooterAscii = malloc(height * sizeof(char*));
+    for (i = 0; i < height; i++) {
+        (*shooterAscii)[i] = malloc(game -> width * sizeof(char));
     }
     
     for (j = 0; j < height; j++) {
@@ -79,20 +75,17 @@ char** drawShooter(const CartesianPoint center, const Game *game) {
             // if it's in the range of 1/2width on either side of the center, then it's a match
             // -1 because used sizeof for width calculation and that includes terminating character
             if (i + strlen(*gunner)/2.0 >= center.x && i - strlen(*gunner)/2.0 <= center.x ) {
-                shooterAscii[j][i] = gunner[j][shooterCounter];
+                (*shooterAscii)[j][i] = gunner[j][shooterCounter];
                 shooterCounter++;
             } else {
-                shooterAscii[j][i] = ' ';
+                (*shooterAscii)[j][i] = ' ';
             }
         }
-        shooterAscii[j][i] = '\0';
+        (*shooterAscii)[j][i] = '\0';
     }
-
-    return shooterAscii;
 }
 
-char** drawGame(Game *game) {
-    char** aliensAndShields;
+void drawGame(Game *game, char*** aliensAndShields) {
     unsigned char numberOfAliens;
     const unsigned char shelterHeight = sizeof(shelter)/sizeof(*shelter);
     const unsigned char height = game -> height - 1 - sizeof(gunner)/sizeof(*gunner); // read string height to figure out how this works
@@ -107,9 +100,9 @@ char** drawGame(Game *game) {
         numberOfAliens = game -> currentNumberOfAliens;
     }
     
-    aliensAndShields = malloc(height * sizeof(char*));
-    for (i = 0; i < game -> width; i++) {
-        aliensAndShields[i] = malloc(game -> width * sizeof(char));
+    *aliensAndShields = malloc(height * sizeof(char*));
+    for (i = 0; i < height; i++) {
+        (*aliensAndShields)[i] = malloc(game -> width * sizeof(char));
     }
 
     // Draw Sheilds First
@@ -122,22 +115,35 @@ char** drawGame(Game *game) {
         for (j = 0; j < game -> width - (game -> width % strlen(*shelter)); j++) {
             // The second accessor (i.e. shelter[i][x]) just mods the shelter length so we can repitively
             // draw shelters
-            aliensAndShields[i][j] = shelter[(i - height + shelterHeight)][j % strlen(*shelter)];
+            (*aliensAndShields)[i][j] = shelter[(i - height + shelterHeight)][j % strlen(*shelter)];
         }
-        aliensAndShields[i][j] = '\0';
+        (*aliensAndShields)[i][j] = '\0';
     }
     
     // This is temporary. Just so we can actually draw something
     for (i = 0; i < height - shelterHeight - 1; i++) {
         for (j = 0; j < game -> width; j++) {
-            aliensAndShields[i][j] = ' ';
+            (*aliensAndShields)[i][j] = ' ';
         }
-        aliensAndShields[i][j] = '\0';
+        (*aliensAndShields)[i][j] = '\0';
     }
+}
 
+void dealloc(const Game* game, char* header, char** gameboard, char** footer) {
+    unsigned char i;
     
+    free(header);
     
-    return aliensAndShields;
+    for (i = 0; i < sizeof(gunner) / sizeof(*gunner); i++) {
+        free(footer[i]);
+    }
+    free(footer);
+    
+    for (i = 0; i < game -> height - 1 - sizeof(gunner)/sizeof(*gunner); i++) {
+        free(gameboard[i]);
+    }
+    
+    free(gameboard);
 }
 
 int power(int base, int exponent) {

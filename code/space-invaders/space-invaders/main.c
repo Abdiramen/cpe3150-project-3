@@ -19,16 +19,16 @@ int main(int argc, const char * argv[]) {
     CartesianPoint center;
     center.x = 25;
     
-    char* header;
-    char** footer, **gameboard;
+    char* header = NULL;
+    char** footer = NULL, **gameboard = NULL;
     
     unsigned char i;
     
     initGame(&game);
     
-    header = createHeader(&game);
-    footer = drawShooter(center, &game);
-    gameboard = drawGame(&game);
+    createHeader(&game, &header);
+    drawShooter(center, &game, &footer);
+    drawGame(&game, &gameboard);
     
     printf("%s\n", header);
     
@@ -36,13 +36,10 @@ int main(int argc, const char * argv[]) {
     for (i = 0; i < game.height - 1 - sizeof(gunner)/sizeof(*gunner); i++) {
         printf("%s\n", gameboard[i]);
     }
-
+    
     for (i = 0; i < stringHeight(footer) + 1; i++) {
         printf("%s\n", footer[i]);
     }
-    
 
-//    free(header);
-//    free(footer);
-//    free(gameboard);
+    dealloc(&game, header, gameboard, footer);
 }
