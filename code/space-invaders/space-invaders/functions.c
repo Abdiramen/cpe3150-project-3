@@ -25,7 +25,7 @@ void initGame(Game* game) {
     game -> height = w.ws_row;
     game -> width = w.ws_col;
     
-    game -> level = 1;
+    game -> level = 2; // THIS IS ONLY A TEST
     game -> lives = 3;
     game -> score = 0;
 }
@@ -90,7 +90,7 @@ void drawGame(Game *game, char*** aliensAndShields) {
     const unsigned char shelterHeight = sizeof(shelter)/sizeof(*shelter);
     const unsigned char height = game -> height - 1 - sizeof(gunner)/sizeof(*gunner); // read string height to figure out how this works
     // we subtract 1 for the header string and the gunner height becuase this is this the "working canvas"
-    
+    static const unsigned char heightOfAverageAlien = sizeof(smallInvaderOne)/sizeof(smallInvaderOne[0]); // static because we assume height to never change
     unsigned char i, j;
     
     if (game -> currentNumberOfAliens == 0) {
@@ -120,8 +120,20 @@ void drawGame(Game *game, char*** aliensAndShields) {
         (*aliensAndShields)[i][j] = '\0';
     }
     
-    // This is temporary. Just so we can actually draw something
-    for (i = 0; i < height - shelterHeight - 1; i++) {
+    // Now the aliens
+    // We start at the height and draw the same row of aliens as there are rows
+    // However, the aliens are typically 2 rows, so have to multiply that by the alien height
+    // We assume all alien heights to be the same
+    for (i = 0; i < game -> level * heightOfAverageAlien; i++) {
+        for (j = 0; j < game -> width; j++) {
+            (*aliensAndShields)[i][j] = smallInvaderOne[i % heightOfAverageAlien][j % strlen(*smallInvaderOne)];
+        }
+        (*aliensAndShields)[i][j] = '\0';
+    }
+    
+    
+    // This is just to draw fill in the rest of the pace
+    for (i = game -> level * heightOfAverageAlien; i < height - shelterHeight - 1; i++) {
         for (j = 0; j < game -> width; j++) {
             (*aliensAndShields)[i][j] = ' ';
         }
@@ -173,4 +185,3 @@ unsigned char stringHeight(char** string) {
     }
     return sizeof(string)/sizeof(string[0]);
 }
-
