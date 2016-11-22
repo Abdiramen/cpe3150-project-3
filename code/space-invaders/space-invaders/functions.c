@@ -25,7 +25,7 @@ void initGame(Game* game) {
     game -> height = w.ws_row;
     game -> width = w.ws_col;
     
-    game -> level = 2; // THIS IS ONLY A TEST
+    game -> level = 5; // THIS IS ONLY A TEST
     game -> lives = 3;
     game -> score = 0;
 }
@@ -121,12 +121,27 @@ void drawGame(Game *game, char*** aliensAndShields) {
     }
     
     // Now the aliens
+    
     // We start at the height and draw the same row of aliens as there are rows
     // However, the aliens are typically 2 rows, so have to multiply that by the alien height
     // We assume all alien heights to be the same
+    
+    // However, the widths don't have to be the same, but we use a heuristic of the small invaders
+    // to truncate the aliens
     for (i = 0; i < game -> level * heightOfAverageAlien; i++) {
-        for (j = 0; j < game -> width; j++) {
-            (*aliensAndShields)[i][j] = smallInvaderOne[i % heightOfAverageAlien][j % strlen(*smallInvaderOne)];
+        for (j = 0; j < game -> width - (game -> width % strlen(*smallInvaderOne)); j++) {
+            // We need to draw different rows of aliens
+            // Now, we need to draw different aliens, depedending on the rows
+            // So, we basically 'undo' the stretching we did above (on i), then shift (because we can't divide by 0 and dividing by 1 would always return true)
+            // Then we mode by 3 because that's the number aliens, and we compare to a number I put there because the returned numbers baffle me.
+            if ((i/heightOfAverageAlien + 2) % 3  == 2) {
+                (*aliensAndShields)[i][j] = smallInvaderOne[i % heightOfAverageAlien][j % strlen(*smallInvaderOne)];
+            } else if ((i/heightOfAverageAlien + 2) % 3 == 0) {
+                (*aliensAndShields)[i][j] = mediumInvaderOne[i % heightOfAverageAlien][j % strlen(*mediumInvaderOne)];
+            } else {
+                (*aliensAndShields)[i][j] = largeInvaderOne[i % heightOfAverageAlien][j % strlen(*largeInvaderOne)];
+            }
+
         }
         (*aliensAndShields)[i][j] = '\0';
     }
