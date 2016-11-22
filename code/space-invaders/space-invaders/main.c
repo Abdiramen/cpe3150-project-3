@@ -28,7 +28,7 @@ int main(int argc, const char * argv[]) {
     
     createHeader(&game, &header);
     drawShooter(center, &game, &footer);
-    drawGame(&game, &gameboard);
+    drawGame(&game, &gameboard, false);
     
     printf("%s\n", header);
     

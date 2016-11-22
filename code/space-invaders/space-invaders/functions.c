@@ -85,7 +85,7 @@ void drawShooter(const CartesianPoint center, const Game *game, char*** shooterA
     }
 }
 
-void drawGame(Game *game, char*** aliensAndShields) {
+void drawGame(Game *game, char*** aliensAndShields, const bool stateOne) {
     unsigned char numberOfAliens;
     const unsigned char shelterHeight = sizeof(shelter)/sizeof(*shelter);
     const unsigned char height = game -> height - 1 - sizeof(gunner)/sizeof(*gunner); // read string height to figure out how this works
@@ -135,11 +135,11 @@ void drawGame(Game *game, char*** aliensAndShields) {
             // So, we basically 'undo' the stretching we did above (on i), then shift (because we can't divide by 0 and dividing by 1 would always return true)
             // Then we mode by 3 because that's the number aliens, and we compare to a number I put there because the returned numbers baffle me.
             if ((i/heightOfAverageAlien + 2) % 3  == 2) {
-                (*aliensAndShields)[i][j] = smallInvaderOne[i % heightOfAverageAlien][j % strlen(*smallInvaderOne)];
+                (*aliensAndShields)[i][j] =  stateOne ? smallInvaderOne[i % heightOfAverageAlien][j % strlen(*smallInvaderOne)] : smallInvaderTwo[i % heightOfAverageAlien][j % strlen(*smallInvaderTwo)];
             } else if ((i/heightOfAverageAlien + 2) % 3 == 0) {
-                (*aliensAndShields)[i][j] = mediumInvaderOne[i % heightOfAverageAlien][j % strlen(*mediumInvaderOne)];
+                (*aliensAndShields)[i][j] =  stateOne ? mediumInvaderOne[i % heightOfAverageAlien][j % strlen(*mediumInvaderOne)] : mediumInvaderTwo[i % heightOfAverageAlien][j % strlen(*mediumInvaderTwo)];
             } else {
-                (*aliensAndShields)[i][j] = largeInvaderOne[i % heightOfAverageAlien][j % strlen(*largeInvaderOne)];
+                (*aliensAndShields)[i][j] =  stateOne ? largeInvaderOne[i % heightOfAverageAlien][j % strlen(*largeInvaderOne)] : largeInvaderTwo[i % heightOfAverageAlien][j % strlen(*largeInvaderTwo)];
             }
 
         }

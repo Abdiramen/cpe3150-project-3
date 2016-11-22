@@ -9,6 +9,8 @@
 #ifndef constants_h
 #define constants_h
 
+typedef enum { false, true } bool;
+
 static const char NAME[] = "Text Invaders";
 
 static const char SCORE[] = "    Score: ";
