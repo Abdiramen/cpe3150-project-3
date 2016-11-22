@@ -12,7 +12,6 @@
 typedef struct Game {
     unsigned char lives, level, score, currentNumberOfAliens;
     int width, height;
-    char** gameBoard;
 } Game;
 
 #endif /* game_h */

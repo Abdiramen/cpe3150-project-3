@@ -63,9 +63,8 @@ static const char *alienExplode[] = {
     "      " };
 
 static const char *shelter[] = {
-    "/MMMMM\\",
-    "MMMMMMM",
-    "MMM MMM" };
-
+    " /MMMMM\\  ",
+    " MMMMMMM   ",
+    " MMM MMM   " };
 
 #endif /* constants_h */

@@ -28,23 +28,21 @@ int main(int argc, const char * argv[]) {
     
     header = createHeader(&game);
     footer = drawShooter(center, &game);
-//    gameboard = drawGame(&game);
+    gameboard = drawGame(&game);
     
     printf("%s\n", header);
     
-//    for (i = 0; i < stringHeight(gameboard); i++) {
-//        printf("%s\n", gameboard[i]);
-//    }
+    // This is really ugly.. but basically we start with the game height and then subt
+    for (i = 0; i < game.height - 1 - sizeof(gunner)/sizeof(*gunner); i++) {
+        printf("%s\n", gameboard[i]);
+    }
 
     for (i = 0; i < stringHeight(footer) + 1; i++) {
         printf("%s\n", footer[i]);
-         printf("%i", stringHeight(footer));
     }
     
-    
-    
+
 //    free(header);
 //    free(footer);
 //    free(gameboard);
-//    free(game.gameBoard);
 }

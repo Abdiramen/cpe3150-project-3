@@ -18,8 +18,6 @@
 #include <stdio.h>
 #include <unistd.h>
 
-
-
 void initGame(Game* game) {
     struct winsize w;
     ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
@@ -30,15 +28,10 @@ void initGame(Game* game) {
     game -> level = 1;
     game -> lives = 3;
     game -> score = 0;
-    
-    game -> gameBoard = malloc(game -> height * sizeof(char*));
-    for (int i = 0; i < game -> width; i++) {
-        game -> gameBoard[i] = malloc(game -> width * sizeof(char));
-    }
 }
 
 char* createHeader(const Game *game) {
-    static char* headerLine = NULL;
+    static char* headerLine;
     unsigned char workingSize = game -> width; // working size is to keep track how much room is left for the header line
     char tempString[2];
     
@@ -70,8 +63,8 @@ char** drawShooter(const CartesianPoint center, const Game *game) {
     const unsigned char width = sizeof(*gunner);
     const unsigned char height = sizeof(gunner) / width; //works like stringHeight, but can't use it because incompatible pointers
     
-    char** shooterAscii = NULL;
-    unsigned char i, j, shooterCounter;
+    char** shooterAscii;
+    int i, j, shooterCounter;
 
     shooterAscii = malloc(height * sizeof(char*));
     for (i = 0; i < game -> width; i++) {
@@ -95,20 +88,14 @@ char** drawShooter(const CartesianPoint center, const Game *game) {
         shooterAscii[j][i] = '\0';
     }
 
-   
-    
-
     return shooterAscii;
 }
 
 char** drawGame(Game *game) {
-    char** aliensAndShields = NULL;
+    char** aliensAndShields;
     unsigned char numberOfAliens;
-    const unsigned char shelterHeight = strlen(*shelter);
-    
-    const unsigned char numberOfShelters = game -> width / (strlen(shelter[0]) + 2.0); // the extra is for space to the left and right
-    const unsigned char spaceLeftOverFromShelter = game -> width % (strlen(shelter[0]) + 2);
-    const unsigned char height = game -> height - 1 + sizeof(gunner)/sizeof(*gunner); // read string height to figure out how this works
+    const unsigned char shelterHeight = sizeof(shelter)/sizeof(*shelter);
+    const unsigned char height = game -> height - 1 - sizeof(gunner)/sizeof(*gunner); // read string height to figure out how this works
     // we subtract 1 for the header string and the gunner height becuase this is this the "working canvas"
     
     unsigned char i, j;
@@ -120,26 +107,35 @@ char** drawGame(Game *game) {
         numberOfAliens = game -> currentNumberOfAliens;
     }
     
-    // ERROR IS HERE
-    aliensAndShields = malloc(game -> width * sizeof(char*));
-    for (int i = 0; i < height; i++) {
-        aliensAndShields[i] = malloc(height * sizeof(char));
+    aliensAndShields = malloc(height * sizeof(char*));
+    for (i = 0; i < game -> width; i++) {
+        aliensAndShields[i] = malloc(game -> width * sizeof(char));
     }
-    
-//    shooterAscii = malloc(game -> width * sizeof(char));
-//    for (int i = 0; i < height; i++) {
-//        shooterAscii[i] = malloc(height * sizeof(char));
-//    }
-    
+
     // Draw Sheilds First
     // i = row, j = column
-    //
-    // We add the space left over from the shelter because
-//    for (i = strlen(*aliensAndShields) + spaceLeftOverFromShelter / 2.0; i < shelterHeight - spaceLeftOverFromShelter / 2.0; i++) {
-//        for (j = 0; j < game -> width; j++) {
-//            aliensAndShields[i][j] = shelter[i][j % strlen(*shelter)];
-//        }
-//    }
+    
+    // We start at the lowermost part of the gameboard to start drawing the shields (i.e. height -1)
+    // And continue until we get to the top of where the shelter be, i.e. the previous height - shetler height
+    for (i = height - 1; i > height - shelterHeight - 1; i--) {
+        // We subtracted game -> width % shelter because we don't want to draw half a shelter
+        for (j = 0; j < game -> width - (game -> width % strlen(*shelter)); j++) {
+            // The second accessor (i.e. shelter[i][x]) just mods the shelter length so we can repitively
+            // draw shelters
+            aliensAndShields[i][j] = shelter[(i - height + shelterHeight)][j % strlen(*shelter)];
+        }
+        aliensAndShields[i][j] = '\0';
+    }
+    
+    // This is temporary. Just so we can actually draw something
+    for (i = 0; i < height - shelterHeight - 1; i++) {
+        for (j = 0; j < game -> width; j++) {
+            aliensAndShields[i][j] = ' ';
+        }
+        aliensAndShields[i][j] = '\0';
+    }
+
+    
     
     return aliensAndShields;
 }
@@ -169,6 +165,6 @@ unsigned char stringHeight(char** string) {
     if (string == NULL) {
         return 0; // To prevent division by zero
     }
-    return sizeof(string)/sizeof(*string);
+    return sizeof(string)/sizeof(string[0]);
 }
 
