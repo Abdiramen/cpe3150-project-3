@@ -8,11 +8,13 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <ncurses.h>
 
 #include "functions.h"
 #include "game.h"
 #include "constants.h"
 #include "point.h"
+
 
 int main(int argc, const char * argv[]) {
     Game game;
@@ -24,22 +26,27 @@ int main(int argc, const char * argv[]) {
     
     unsigned char i;
     
+    initscr();
+    
     initGame(&game);
     
     createHeader(&game, &header);
     drawShooter(center, &game, &footer);
-    drawGame(&game, &gameboard, false);
+    drawTheGame(&game, &gameboard, false);
     
-    printf("%s\n", header);
+    printw("%s\n", header);
     
     // This is really ugly.. but basically we start with the game height and then subt
     for (i = 0; i < game.height - 1 - sizeof(gunner)/sizeof(*gunner); i++) {
-        printf("%s\n", gameboard[i]);
+        printw("%s\n", gameboard[i]);
     }
     
     for (i = 0; i < stringHeight(footer) + 1; i++) {
-        printf("%s\n", footer[i]);
+        printw("%s\n", footer[i]);
     }
 
+    for(;;) refresh();
+
+    endwin();
     dealloc(&game, header, gameboard, footer);
 }

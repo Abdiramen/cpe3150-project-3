@@ -16,7 +16,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-
+#include <ncurses.h>
 
 // INITS / DEINITS
 void initGame(Game* game);
@@ -24,7 +24,7 @@ void initGame(Game* game);
 // DRAWING LOGIC
 void createHeader(const Game *game, char** headerLine);
 void drawShooter(const CartesianPoint center, const Game *game, char*** shooterAscii);
-void drawGame(Game *game, char*** aliensAndShields, const bool stateOfAliens);
+void drawTheGame(Game *game, char*** aliensAndShields, const bool stateOne);
 
 // GAME LOGIC
 void dealloc(const Game* game, char* header, char** gameboard, char** footer);

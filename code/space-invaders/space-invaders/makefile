@@ -1,5 +1,5 @@
 TARGET = build
-LIBS = -lm
+LIBS = -lm -lncurses
 CC = gcc
 CFLAGS = -g -Wall
 

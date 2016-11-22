@@ -12,20 +12,16 @@
 #include "point.h"
 
 #include <stdlib.h>
-#include <string.h>
-
-#include <sys/ioctl.h>
 #include <stdio.h>
+#include <string.h>
+#include <ncurses.h>
 #include <unistd.h>
 
+
 void initGame(Game* game) {
-    struct winsize w;
-    ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
-    
-    game -> height = w.ws_row;
-    game -> width = w.ws_col;
-    
-    game -> level = 5; // THIS IS ONLY A TEST
+    getmaxyx(stdscr, game -> height, game -> width);
+    game -> width -= 10; // Don't ask me why but this is neccessary 
+    game -> level = 5;
     game -> lives = 3;
     game -> score = 0;
 }
@@ -85,7 +81,7 @@ void drawShooter(const CartesianPoint center, const Game *game, char*** shooterA
     }
 }
 
-void drawGame(Game *game, char*** aliensAndShields, const bool stateOne) {
+void drawTheGame(Game *game, char*** aliensAndShields, const bool stateOne) {
     unsigned char numberOfAliens;
     const unsigned char shelterHeight = sizeof(shelter)/sizeof(*shelter);
     const unsigned char height = game -> height - 1 - sizeof(gunner)/sizeof(*gunner); // read string height to figure out how this works
