@@ -58,7 +58,7 @@ void createHeader(const Game *game, char** headerLine) {
 }
 
 // Note: the center actually ignores height. ¯\_(ツ)_/¯
-void drawShooter(const CartesianPoint center, const Game *game, char*** shooterAscii) {
+void createShooter(const CartesianPoint center, const Game *game, char*** shooterAscii) {
     const unsigned char width = sizeof(*gunner);
     const unsigned char height = sizeof(gunner) / width; //works like stringHeight, but can't use it because incompatible pointers
     
@@ -89,7 +89,7 @@ void drawShooter(const CartesianPoint center, const Game *game, char*** shooterA
     }
 }
 
-void drawTheGame(Game *game, char*** aliensAndShields, const bool stateOne) {
+void createGameboard(Game *game, char*** aliensAndShields, const bool stateOne) {
     unsigned char numberOfAliens;
     const unsigned char shelterHeight = sizeof(shelter)/sizeof(*shelter);
     const unsigned char height = game -> height - 1 - sizeof(gunner)/sizeof(*gunner); // read string height to figure out how this works
@@ -161,6 +161,25 @@ void drawTheGame(Game *game, char*** aliensAndShields, const bool stateOne) {
         }
         (*aliensAndShields)[i][j] = '\0';
     }
+}
+
+void draw(const Game *game, char** header, char*** gameboard, char*** footer) {
+    unsigned char i;
+    
+    printw("%s\n", *header);
+    
+    // This is really ugly.. but basically we start with the game height and then subt
+    for (i = 0; i < game -> height - 1 - sizeof(gunner)/sizeof(*gunner); i++) {
+        printw("%s\n", (*gameboard)[i]);
+    }
+    
+    // no idea why this doesn't return 2, but it doesn't
+    // so +1
+    for (i = 0; i < sizeof(*footer)/sizeof(*footer[0]) + 1; i++) {
+        printw("%s\n", (*footer)[i]);
+    }
+    
+    refresh();
 }
 
 void dealloc(const Game* game, char* header, char** gameboard, char** footer) {

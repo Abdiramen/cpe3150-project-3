@@ -23,8 +23,9 @@ void initGame(Game* game);
 
 // DRAWING LOGIC
 void createHeader(const Game *game, char** headerLine);
-void drawShooter(const CartesianPoint center, const Game *game, char*** shooterAscii);
-void drawTheGame(Game *game, char*** aliensAndShields, const bool stateOne);
+void createShooter(const CartesianPoint center, const Game *game, char*** shooterAscii);
+void createGameboard(Game *game, char*** aliensAndShields, const bool stateOne);
+void draw(const Game *game, char** header, char*** gameboard, char*** footer);
 
 // GAME LOGIC
 void dealloc(const Game* game, char* header, char** gameboard, char** footer);

@@ -16,15 +16,15 @@
 #include "point.h"
 
 
+
 int main(int argc, const char * argv[]) {
     Game game;
     CartesianPoint center;
-    center.x = 25;
     
     char* header = NULL;
     char** footer = NULL, **gameboard = NULL;
     
-    unsigned char i, input = '0';
+    unsigned char input = '0';
     
     initscr();
     nodelay(stdscr, TRUE);
@@ -32,26 +32,16 @@ int main(int argc, const char * argv[]) {
     cbreak();
     
     initGame(&game);
+    center.x = game.width / 2;
 
     do {
-        createHeader(&game, &header);
-        drawShooter(center, &game, &footer);
-        drawTheGame(&game, &gameboard, false);
-        
-        printw("%s\n", header);
-        
-        // This is really ugly.. but basically we start with the game height and then subt
-        for (i = 0; i < game.height - 1 - sizeof(gunner)/sizeof(*gunner); i++) {
-            printw("%s\n", gameboard[i]);
-        }
-        
-        for (i = 0; i < stringHeight(footer) + 1; i++) {
-            printw("%s\n", footer[i]);
-        }
-        
-        refresh();
-        
         input = getch();
+        
+        createHeader(&game, &header);
+        createShooter(center, &game, &footer);
+        createGameboard(&game, &gameboard, false);
+        
+        draw(&game, &header, &gameboard, &footer);
         
     } while (input != 'q');
     
