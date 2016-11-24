@@ -29,6 +29,7 @@ void drawTheGame(Game *game, char*** aliensAndShields, const bool stateOne);
 // GAME LOGIC
 void dealloc(const Game* game, char* header, char** gameboard, char** footer);
 
+
 // MAINTENANCE FUNCTIONS
 int power(int base, int exponent);
 void numberToCharacter(const unsigned char number, char* string);

@@ -16,21 +16,27 @@
 #include <string.h>
 #include <ncurses.h>
 #include <unistd.h>
+#include <sys/ioctl.h>
 
 
 void initGame(Game* game) {
     getmaxyx(stdscr, game -> height, game -> width);
-    game -> width -= 10; // Don't ask me why but this is neccessary 
-    game -> level = 5;
+    
+    game -> level = 1;
     game -> lives = 3;
     game -> score = 0;
+    
+    
 }
+
 
 void createHeader(const Game *game, char** headerLine) {
     unsigned char workingSize = game -> width; // working size is to keep track how much room is left for the header line
     char tempString[2];
     
-    *headerLine = malloc(game -> width * sizeof(char));
+    if (*headerLine == NULL) {
+        *headerLine = malloc(game -> width * sizeof(char));
+    }
     
     if (workingSize > strlen(NAME)) {
         strcpy(*headerLine, NAME);
@@ -57,10 +63,12 @@ void drawShooter(const CartesianPoint center, const Game *game, char*** shooterA
     const unsigned char height = sizeof(gunner) / width; //works like stringHeight, but can't use it because incompatible pointers
     
     int i, j, shooterCounter;
-
-    *shooterAscii = malloc(height * sizeof(char*));
-    for (i = 0; i < height; i++) {
-        (*shooterAscii)[i] = malloc(game -> width * sizeof(char));
+    
+    if (*shooterAscii == NULL) {
+        *shooterAscii = malloc(height * sizeof(char*));
+        for (i = 0; i < height; i++) {
+            (*shooterAscii)[i] = malloc(game -> width * sizeof(char));
+        }
     }
     
     for (j = 0; j < height; j++) {
@@ -96,10 +104,13 @@ void drawTheGame(Game *game, char*** aliensAndShields, const bool stateOne) {
         numberOfAliens = game -> currentNumberOfAliens;
     }
     
-    *aliensAndShields = malloc(height * sizeof(char*));
-    for (i = 0; i < height; i++) {
-        (*aliensAndShields)[i] = malloc(game -> width * sizeof(char));
+    if (*aliensAndShields == NULL) {
+        *aliensAndShields = malloc(height * sizeof(char*));
+        for (i = 0; i < height; i++) {
+            (*aliensAndShields)[i] = malloc(game -> width * sizeof(char));
+        }
     }
+    
 
     // Draw Sheilds First
     // i = row, j = column
@@ -108,7 +119,7 @@ void drawTheGame(Game *game, char*** aliensAndShields, const bool stateOne) {
     // And continue until we get to the top of where the shelter be, i.e. the previous height - shetler height
     for (i = height - 1; i > height - shelterHeight - 1; i--) {
         // We subtracted game -> width % shelter because we don't want to draw half a shelter
-        for (j = 0; j < game -> width - (game -> width % strlen(*shelter)); j++) {
+        for (j = 0; j < game -> width - 1 - (game -> width % strlen(*shelter)); j++) {
             // The second accessor (i.e. shelter[i][x]) just mods the shelter length so we can repitively
             // draw shelters
             (*aliensAndShields)[i][j] = shelter[(i - height + shelterHeight)][j % strlen(*shelter)];
@@ -125,7 +136,7 @@ void drawTheGame(Game *game, char*** aliensAndShields, const bool stateOne) {
     // However, the widths don't have to be the same, but we use a heuristic of the small invaders
     // to truncate the aliens
     for (i = 0; i < game -> level * heightOfAverageAlien; i++) {
-        for (j = 0; j < game -> width - (game -> width % strlen(*smallInvaderOne)); j++) {
+        for (j = 0; j < game -> width - 1 - (game -> width % strlen(*smallInvaderOne)); j++) {
             // We need to draw different rows of aliens
             // Now, we need to draw different aliens, depedending on the rows
             // So, we basically 'undo' the stretching we did above (on i), then shift (because we can't divide by 0 and dividing by 1 would always return true)
@@ -145,7 +156,7 @@ void drawTheGame(Game *game, char*** aliensAndShields, const bool stateOne) {
     
     // This is just to draw fill in the rest of the pace
     for (i = game -> level * heightOfAverageAlien; i < height - shelterHeight - 1; i++) {
-        for (j = 0; j < game -> width; j++) {
+        for (j = 0; j < game -> width - 1; j++) {
             (*aliensAndShields)[i][j] = ' ';
         }
         (*aliensAndShields)[i][j] = '\0';
