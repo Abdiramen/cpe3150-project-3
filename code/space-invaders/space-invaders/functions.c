@@ -25,8 +25,6 @@ void initGame(Game* game) {
     game -> level = 1;
     game -> lives = 3;
     game -> score = 0;
-    
-    
 }
 
 
@@ -178,8 +176,6 @@ void draw(const Game *game, char** header, char*** gameboard, char*** footer) {
     for (i = 0; i < sizeof(*footer)/sizeof(*footer[0]) + 1; i++) {
         printw("%s\n", (*footer)[i]);
     }
-    
-    refresh();
 }
 
 void dealloc(const Game* game, char* header, char** gameboard, char** footer) {

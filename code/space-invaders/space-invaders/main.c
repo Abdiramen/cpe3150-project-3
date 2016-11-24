@@ -16,35 +16,66 @@
 #include "point.h"
 
 
+bool inBoundsOfGame(const Game* game, const CartesianPoint* point) {
+    return point -> x >= 0 && point -> x < game -> width // the x is in bounds
+   && point -> y >= 0 && point -> y < game -> height; // and the y is in bounds
+}
 
 int main(int argc, const char * argv[]) {
     Game game;
-    CartesianPoint center;
+    CartesianPoint centerOfShooter;
     
     char* header = NULL;
     char** footer = NULL, **gameboard = NULL;
-    
-    unsigned char input = '0';
     
     initscr();
     nodelay(stdscr, TRUE);
     noecho();
     cbreak();
     
-    initGame(&game);
-    center.x = game.width / 2;
-
-    do {
-        input = getch();
-        
-        createHeader(&game, &header);
-        createShooter(center, &game, &footer);
-        createGameboard(&game, &gameboard, false);
-        
-        draw(&game, &header, &gameboard, &footer);
-        
-    } while (input != 'q');
+    keypad(stdscr, TRUE);
     
-    endwin();
-    dealloc(&game, header, gameboard, footer);
+    initGame(&game);
+    
+    centerOfShooter.x = game.width / 2;
+    centerOfShooter.y = game.height - 2;
+    
+    do {
+        switch (getch()) {
+            case KEY_LEFT:
+                if (inBoundsOfGame(&game, &centerOfShooter)) {
+                    centerOfShooter.x--;
+                    clear();
+                }
+                break;
+                
+            case KEY_RIGHT:
+                if (inBoundsOfGame(&game, &centerOfShooter)) {
+                    centerOfShooter.x++;
+                    clear();
+                }
+                break;
+                
+            case 'q':
+                endwin();
+                dealloc(&game, header, gameboard, footer);
+                exit(0);
+                break;
+                
+                
+            default:
+                createHeader(&game, &header);
+                createShooter(centerOfShooter, &game, &footer);
+                createGameboard(&game, &gameboard, false);
+                draw(&game, &header, &gameboard, &footer);
+                
+                refresh();
+                break;
+        }
+        
+        
+
+    } while (true);
+    
+    
 }
