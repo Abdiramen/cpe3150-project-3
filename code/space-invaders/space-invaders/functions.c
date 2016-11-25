@@ -17,6 +17,7 @@
 #include <ncurses.h>
 #include <unistd.h>
 #include <sys/ioctl.h>
+#include <time.h>
 
 
 void initGame(Game* game) {
@@ -25,6 +26,8 @@ void initGame(Game* game) {
     game -> level = 1;
     game -> lives = 3;
     game -> score = 0;
+    
+    game -> gunner.playerDidShoot = false;
 }
 
 
@@ -146,6 +149,10 @@ void createGameboard(Game *game, char*** aliensAndShields, const bool stateOne) 
             } else {
                 (*aliensAndShields)[i][j] =  stateOne ? largeInvaderOne[i % heightOfAverageAlien][j % strlen(*largeInvaderOne)] : largeInvaderTwo[i % heightOfAverageAlien][j % strlen(*largeInvaderTwo)];
             }
+            
+            if (game -> height == game -> gunner.playerShot.y) {
+                game -> gunner.playerDidShoot = false;
+            }
 
         }
         (*aliensAndShields)[i][j] = '\0';
@@ -156,13 +163,23 @@ void createGameboard(Game *game, char*** aliensAndShields, const bool stateOne) 
     for (i = game -> level * heightOfAverageAlien; i < height - shelterHeight - 1; i++) {
         for (j = 0; j < game -> width - 1; j++) {
             (*aliensAndShields)[i][j] = ' ';
+            
+            if (game -> gunner.playerDidShoot) {
+                if (game -> gunner.playerShot.y == i && game -> gunner.playerShot.x == j) {
+                    (*aliensAndShields)[i][j] = SHOT;
+                }
+            }
         }
         (*aliensAndShields)[i][j] = '\0';
     }
+    
+    // because we have already drawn the player's shot, we need to update it for the next frame
+    (game -> gunner.playerShot.y)++;
 }
 
 void draw(const Game *game, char** header, char*** gameboard, char*** footer) {
     unsigned char i;
+    clear();
     
     printw("%s\n", *header);
     
@@ -176,6 +193,8 @@ void draw(const Game *game, char** header, char*** gameboard, char*** footer) {
     for (i = 0; i < sizeof(*footer)/sizeof(*footer[0]) + 1; i++) {
         printw("%s\n", (*footer)[i]);
     }
+    
+    doupdate();
 }
 
 void dealloc(const Game* game, char* header, char** gameboard, char** footer) {
@@ -201,6 +220,11 @@ int power(int base, int exponent) {
     }
     
     return base * power(base, exponent - 1);
+}
+
+void waitForIt(unsigned char seconds) {
+    unsigned int retTime = (unsigned int)time(0) + (unsigned int)seconds;
+    while (time(0) < retTime);
 }
 
 char* numberToString(int number, char *string) {

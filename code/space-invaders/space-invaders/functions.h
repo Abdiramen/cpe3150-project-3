@@ -33,6 +33,9 @@ void dealloc(const Game* game, char* header, char** gameboard, char** footer);
 
 // MAINTENANCE FUNCTIONS
 int power(int base, int exponent);
+// It's gonna be legened..
+void waitForIt(unsigned char seconds); 
+// ..ary! Lengendary.
 void numberToCharacter(const unsigned char number, char* string);
 char* numberToString(int number, char *string);
 unsigned char stringHeight(char** string);

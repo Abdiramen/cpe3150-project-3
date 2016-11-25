@@ -15,6 +15,7 @@
 #include "constants.h"
 #include "point.h"
 
+static const unsigned int STATE_CHANGE = 1500;
 
 bool inBoundsOfGame(const Game* game, const CartesianPoint* point) {
     return point -> x >= 0 && point -> x < game -> width // the x is in bounds
@@ -23,10 +24,11 @@ bool inBoundsOfGame(const Game* game, const CartesianPoint* point) {
 
 int main(int argc, const char * argv[]) {
     Game game;
-    CartesianPoint centerOfShooter;
     
     char* header = NULL;
     char** footer = NULL, **gameboard = NULL;
+    unsigned int i = 0;
+    bool state = false;
     
     initscr();
     nodelay(stdscr, TRUE);
@@ -37,23 +39,26 @@ int main(int argc, const char * argv[]) {
     
     initGame(&game);
     
-    centerOfShooter.x = game.width / 2;
-    centerOfShooter.y = game.height - 2;
+    game.gunner.center.x = game.width / 2;
+    game.gunner.center.y = game.height - 2;
     
     do {
         switch (getch()) {
             case KEY_LEFT:
-                if (inBoundsOfGame(&game, &centerOfShooter)) {
-                    centerOfShooter.x--;
-                    clear();
+                if (inBoundsOfGame(&game, &game.gunner.center)) {
+                    game.gunner.center.x--;
                 }
                 break;
                 
             case KEY_RIGHT:
-                if (inBoundsOfGame(&game, &centerOfShooter)) {
-                    centerOfShooter.x++;
-                    clear();
+                if (inBoundsOfGame(&game, &game.gunner.center)) {
+                    game.gunner.center.x++;
                 }
+                break;
+                
+            case ' ':
+                game.gunner.playerDidShoot = true;
+                game.gunner.playerShot = game.gunner.center;
                 break;
                 
             case 'q':
@@ -65,14 +70,18 @@ int main(int argc, const char * argv[]) {
                 
             default:
                 createHeader(&game, &header);
-                createShooter(centerOfShooter, &game, &footer);
-                createGameboard(&game, &gameboard, false);
+                createShooter(game.gunner.center, &game, &footer);
+                createGameboard(&game, &gameboard, state);
+                
                 draw(&game, &header, &gameboard, &footer);
                 
-                refresh();
                 break;
         }
         
+        i++;
+        if (i % STATE_CHANGE == 0) {
+            state = state ? false : true; // You would think the compilment would work (~), but it doesn't
+        }
         
 
     } while (true);

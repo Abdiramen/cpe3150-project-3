@@ -9,9 +9,22 @@
 #ifndef game_h
 #define game_h
 
+#include "point.h"
+#include "constants.h"
+
+typedef struct Shooter {
+    _Bool playerDidShoot;
+    
+    CartesianPoint playerShot;
+    CartesianPoint center;
+} Shooter;
+
 typedef struct Game {
+    Shooter gunner;
+    
     unsigned char lives, level, score, currentNumberOfAliens;
     int width, height;
 } Game;
+
 
 #endif /* game_h */
