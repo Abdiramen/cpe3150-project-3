@@ -15,12 +15,7 @@
 #include "constants.h"
 #include "point.h"
 
-static const unsigned int STATE_CHANGE = 1500;
-
-bool inBoundsOfGame(const Game* game, const CartesianPoint* point) {
-    return point -> x >= 0 && point -> x < game -> width // the x is in bounds
-   && point -> y >= 0 && point -> y < game -> height; // and the y is in bounds
-}
+static const unsigned char STATE_CHANGE_SHOT = 40;
 
 int main(int argc, const char * argv[]) {
     Game game;
@@ -28,7 +23,7 @@ int main(int argc, const char * argv[]) {
     char* header = NULL;
     char** footer = NULL, **gameboard = NULL;
     unsigned int i = 0;
-    bool state = false;
+    bool stateOfAliens = false, stateOfShot = false;
     
     initscr();
     nodelay(stdscr, TRUE);
@@ -40,7 +35,7 @@ int main(int argc, const char * argv[]) {
     initGame(&game);
     
     game.gunner.center.x = game.width / 2;
-    game.gunner.center.y = game.height - 2;
+    game.gunner.center.y = game.height - 1;
     
     do {
         switch (getch()) {
@@ -57,8 +52,11 @@ int main(int argc, const char * argv[]) {
                 break;
                 
             case ' ':
-                game.gunner.playerDidShoot = true;
-                game.gunner.playerShot = game.gunner.center;
+                if (!game.gunner.playerDidShoot) {
+                    game.gunner.playerDidShoot = true;
+                    game.gunner.playerShot = game.gunner.center;
+                    game.gunner.playerShot.y -= 4;
+                }
                 break;
                 
             case 'q':
@@ -71,17 +69,29 @@ int main(int argc, const char * argv[]) {
             default:
                 createHeader(&game, &header);
                 createShooter(game.gunner.center, &game, &footer);
-                createGameboard(&game, &gameboard, state);
+                createGameboard(&game, &gameboard, stateOfAliens, stateOfShot);
                 
                 draw(&game, &header, &gameboard, &footer);
                 
                 break;
         }
         
+        
         i++;
-        if (i % STATE_CHANGE == 0) {
-            state = state ? false : true; // You would think the compilment would work (~), but it doesn't
+        
+        // For the state of the aliens, we want to alternate with equal iterations
+        if (i % STATE_CHANGE_ALIENS == 0) {
+            // You would think the compilment would work (~), but it doesn't
+            stateOfAliens = stateOfAliens ? false : true;
         }
+        
+        // For the state of the shot, we only want to update ~every someodd iterations
+        if (i % STATE_CHANGE_SHOT == 0) {
+            stateOfShot = true;
+        } else {
+            stateOfShot = false;
+        }
+        
         
 
     } while (true);

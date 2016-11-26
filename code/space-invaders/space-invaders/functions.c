@@ -90,7 +90,7 @@ void createShooter(const CartesianPoint center, const Game *game, char*** shoote
     }
 }
 
-void createGameboard(Game *game, char*** aliensAndShields, const bool stateOne) {
+void createGameboard(Game *game, char*** aliensAndShields, const bool stateOne, const bool updateShot) {
     unsigned char numberOfAliens;
     const unsigned char shelterHeight = sizeof(shelter)/sizeof(*shelter);
     const unsigned char height = game -> height - 1 - sizeof(gunner)/sizeof(*gunner); // read string height to figure out how this works
@@ -149,10 +149,6 @@ void createGameboard(Game *game, char*** aliensAndShields, const bool stateOne) 
             } else {
                 (*aliensAndShields)[i][j] =  stateOne ? largeInvaderOne[i % heightOfAverageAlien][j % strlen(*largeInvaderOne)] : largeInvaderTwo[i % heightOfAverageAlien][j % strlen(*largeInvaderTwo)];
             }
-            
-            if (game -> height == game -> gunner.playerShot.y) {
-                game -> gunner.playerDidShoot = false;
-            }
 
         }
         (*aliensAndShields)[i][j] = '\0';
@@ -163,18 +159,25 @@ void createGameboard(Game *game, char*** aliensAndShields, const bool stateOne) 
     for (i = game -> level * heightOfAverageAlien; i < height - shelterHeight - 1; i++) {
         for (j = 0; j < game -> width - 1; j++) {
             (*aliensAndShields)[i][j] = ' ';
-            
-            if (game -> gunner.playerDidShoot) {
-                if (game -> gunner.playerShot.y == i && game -> gunner.playerShot.x == j) {
-                    (*aliensAndShields)[i][j] = SHOT;
-                }
-            }
         }
         (*aliensAndShields)[i][j] = '\0';
     }
     
-    // because we have already drawn the player's shot, we need to update it for the next frame
-    (game -> gunner.playerShot.y)++;
+    
+    // Next we check to see if the player did shoot and if he did, we draw accordingly
+    if (game -> gunner.playerDidShoot) {
+        if (!inBounds(&(game -> gunner.playerShot), game -> width - 1, height - 1)) {
+            game -> gunner.playerDidShoot = false;
+        } else {
+            (*aliensAndShields)[game -> gunner.playerShot.y][game -> gunner.playerShot.x] = SHOT;
+        }
+    
+        // because we have already drawn the player's shot, we need to update it for the next frame
+        // We subtract because (0,0 is the top left)
+        if (updateShot) {
+            (game -> gunner.playerShot.y)--;
+        }
+    }
 }
 
 void draw(const Game *game, char** header, char*** gameboard, char*** footer) {
@@ -212,6 +215,16 @@ void dealloc(const Game* game, char* header, char** gameboard, char** footer) {
     }
     
     free(gameboard);
+}
+
+bool inBoundsOfGame(const Game* game, const CartesianPoint* point) {
+    return point -> x >= 0 && point -> x < game -> width // the x is in bounds
+    && point -> y >= 0 && point -> y < game -> height; // and the y is in bounds
+}
+
+bool inBounds(const CartesianPoint* point, const unsigned char maxX, const unsigned char maxY) {
+    return point -> x >= 0 && point -> x < maxX // the x is in bounds
+    && point -> y >= 0 && point -> y < maxY; // and the y is in bounds
 }
 
 int power(int base, int exponent) {

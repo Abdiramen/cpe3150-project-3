@@ -18,6 +18,8 @@ static const char LIVES[] = "    Lives: ";
 
 static const char SHOT = 'A';
 
+static const unsigned int STATE_CHANGE_ALIENS = 1500;
+
 // These are borrowwed from https://github.com/macdice/ascii-invaders/blob/master/invaders.c
 static const char *gunner[] = {
     " mAm " ,
