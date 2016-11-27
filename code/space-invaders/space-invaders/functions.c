@@ -27,11 +27,17 @@ void initGame(Game* game) {
     game -> lives = 3;
     game -> score = 0;
     
+    game -> headerNeedsUpdate = true;
+    game -> gunnerNeedsUpdate = true;
+    
+    game -> shelterNeedsRedraw = true;
+    game -> freeSpaceNeedsRedraw = true;
+    
     game -> gunner.playerDidShoot = false;
 }
 
 
-void createHeader(const Game *game, char** headerLine) {
+void createHeader(Game *game, char** headerLine) {
     unsigned char workingSize = game -> width; // working size is to keep track how much room is left for the header line
     char tempString[2];
     
@@ -39,27 +45,33 @@ void createHeader(const Game *game, char** headerLine) {
         *headerLine = malloc(game -> width * sizeof(char));
     }
     
-    if (workingSize > strlen(NAME)) {
-        strcpy(*headerLine, NAME);
-        workingSize -= strlen(NAME);
-    }
-    
-    
-    if (workingSize > strlen(LIVES) + sizeof(tempString)) {
-        strcat(*headerLine, LIVES);
-        strcat(*headerLine, numberToString(game -> lives, tempString));
-        workingSize -= strlen(NAME);
-    }
-    
-    if (workingSize > strlen(SCORE) + sizeof(tempString)) {
-        strcat(*headerLine, SCORE);
-        strcat(*headerLine, numberToString(game -> score, tempString));
-        workingSize -= strlen(NAME);
+    // It's not that expensive to update all of these (well, relatively)
+    // So we can just reinstatiate the entire header from scratch
+    if (game -> headerNeedsUpdate) {
+        if (workingSize > strlen(NAME)) {
+            strcpy(*headerLine, NAME);
+            workingSize -= strlen(NAME);
+        }
+        
+        
+        if (workingSize > strlen(LIVES) + sizeof(tempString)) {
+            strcat(*headerLine, LIVES);
+            strcat(*headerLine, numberToString(game -> lives, tempString));
+            workingSize -= strlen(NAME);
+        }
+        
+        if (workingSize > strlen(SCORE) + sizeof(tempString)) {
+            strcat(*headerLine, SCORE);
+            strcat(*headerLine, numberToString(game -> score, tempString));
+            workingSize -= strlen(NAME);
+        }
+        
+        game -> headerNeedsUpdate = false;
     }
 }
 
 // Note: the center actually ignores height. ¯\_(ツ)_/¯
-void createShooter(const CartesianPoint center, const Game *game, char*** shooterAscii) {
+void createShooter(const CartesianPoint center, Game *game, char*** shooterAscii) {
     const unsigned char width = sizeof(*gunner);
     const unsigned char height = sizeof(gunner) / width; //works like stringHeight, but can't use it because incompatible pointers
     
@@ -72,21 +84,26 @@ void createShooter(const CartesianPoint center, const Game *game, char*** shoote
         }
     }
     
-    for (j = 0; j < height; j++) {
-        shooterCounter = 0;
-        for (i = 0; i < game -> width - 1; i++) {
-            
-            // the if determines if the shooter should be drawn, and it works like so:
-            // if it's in the range of 1/2width on either side of the center, then it's a match
-            // -1 because used sizeof for width calculation and that includes terminating character
-            if (i + strlen(*gunner)/2.0 >= center.x && i - strlen(*gunner)/2.0 <= center.x ) {
-                (*shooterAscii)[j][i] = gunner[j][shooterCounter];
-                shooterCounter++;
-            } else {
-                (*shooterAscii)[j][i] = ' ';
+    if (game -> gunnerNeedsUpdate) {
+        
+        for (j = 0; j < height; j++) {
+            shooterCounter = 0;
+            for (i = 0; i < game -> width - 1; i++) {
+                
+                // the if determines if the shooter should be drawn, and it works like so:
+                // if it's in the range of 1/2width on either side of the center, then it's a match
+                // -1 because used sizeof for width calculation and that includes terminating character
+                if (i + strlen(*gunner)/2.0 >= center.x && i - strlen(*gunner)/2.0 <= center.x ) {
+                    (*shooterAscii)[j][i] = gunner[j][shooterCounter];
+                    shooterCounter++;
+                } else {
+                    (*shooterAscii)[j][i] = ' ';
+                }
             }
+            (*shooterAscii)[j][i] = '\0';
         }
-        (*shooterAscii)[j][i] = '\0';
+        
+        game -> gunnerNeedsUpdate = false;
     }
 }
 
@@ -112,66 +129,79 @@ void createGameboard(Game *game, char*** aliensAndShields, const bool stateOne, 
         }
     }
     
-
-    // Draw Sheilds First
-    // i = row, j = column
-    
-    // We start at the lowermost part of the gameboard to start drawing the shields (i.e. height -1)
-    // And continue until we get to the top of where the shelter be, i.e. the previous height - shetler height
-    for (i = height - 1; i > height - shelterHeight - 1; i--) {
-        // We subtracted game -> width % shelter because we don't want to draw half a shelter
-        for (j = 0; j < game -> width - 1 - (game -> width % strlen(*shelter)); j++) {
-            // The second accessor (i.e. shelter[i][x]) just mods the shelter length so we can repitively
-            // draw shelters
-            (*aliensAndShields)[i][j] = shelter[(i - height + shelterHeight)][j % strlen(*shelter)];
-        }
-        (*aliensAndShields)[i][j] = '\0';
-    }
-    
-    // Now the aliens
-    
-    // We start at the height and draw the same row of aliens as there are rows
-    // However, the aliens are typically 2 rows, so have to multiply that by the alien height
-    // We assume all alien heights to be the same
-    
-    // However, the widths don't have to be the same, but we use a heuristic of the small invaders
-    // to truncate the aliens
-    for (i = 0; i < game -> level * heightOfAverageAlien; i++) {
-        for (j = 0; j < game -> width - 1 - (game -> width % strlen(*smallInvaderOne)); j++) {
-            // We need to draw different rows of aliens
-            // Now, we need to draw different aliens, depedending on the rows
-            // So, we basically 'undo' the stretching we did above (on i), then shift (because we can't divide by 0 and dividing by 1 would always return true)
-            // Then we mode by 3 because that's the number aliens, and we compare to a number I put there because the returned numbers baffle me.
-            if ((i/heightOfAverageAlien + 2) % 3  == 2) {
-                (*aliensAndShields)[i][j] =  stateOne ? smallInvaderOne[i % heightOfAverageAlien][j % strlen(*smallInvaderOne)] : smallInvaderTwo[i % heightOfAverageAlien][j % strlen(*smallInvaderTwo)];
-            } else if ((i/heightOfAverageAlien + 2) % 3 == 0) {
-                (*aliensAndShields)[i][j] =  stateOne ? mediumInvaderOne[i % heightOfAverageAlien][j % strlen(*mediumInvaderOne)] : mediumInvaderTwo[i % heightOfAverageAlien][j % strlen(*mediumInvaderTwo)];
-            } else {
-                (*aliensAndShields)[i][j] =  stateOne ? largeInvaderOne[i % heightOfAverageAlien][j % strlen(*largeInvaderOne)] : largeInvaderTwo[i % heightOfAverageAlien][j % strlen(*largeInvaderTwo)];
+    if (game ->  shelterNeedsRedraw) {
+        // Draw Sheilds First
+        // i = row, j = column
+        // We start at the lowermost part of the gameboard to start drawing the shields (i.e. height -1)
+        // And continue until we get to the top of where the shelter be, i.e. the previous height - shetler height
+        for (i = height - 1; i > height - shelterHeight - 1; i--) {
+            // We subtracted game -> width % shelter because we don't want to draw half a shelter
+            for (j = 0; j < game -> width - 1 - (game -> width % strlen(*shelter)); j++) {
+                // The second accessor (i.e. shelter[i][x]) just mods the shelter length so we can repitively
+                // draw shelters
+                (*aliensAndShields)[i][j] = shelter[(i - height + shelterHeight)][j % strlen(*shelter)];
             }
+            (*aliensAndShields)[i][j] = '\0';
+        }
+        game -> shelterNeedsRedraw = false;
+    }
+    
+        // Now the aliens
+        
+        // We start at the height and draw the same row of aliens as there are rows
+        // However, the aliens are typically 2 rows, so have to multiply that by the alien height
+        // We assume all alien heights to be the same
+        
+        // However, the widths don't have to be the same, but we use a heuristic of the small invaders
+        // to truncate the aliens
+        for (i = 0; i < game -> level * heightOfAverageAlien; i++) {
+            for (j = 0; j < game -> width - 1 - (game -> width % strlen(*smallInvaderOne)); j++) {
+                // We need to draw different rows of aliens
+                // Now, we need to draw different aliens, depedending on the rows
+                // So, we basically 'undo' the stretching we did above (on i), then shift (because we can't divide by 0 and dividing by 1 would always return true)
+                // Then we mode by 3 because that's the number aliens, and we compare to a number I put there because the returned numbers baffle me.
+                if ((i/heightOfAverageAlien + 2) % 3  == 2) {
+                    (*aliensAndShields)[i][j] =  stateOne ? smallInvaderOne[i % heightOfAverageAlien][j % strlen(*smallInvaderOne)] : smallInvaderTwo[i % heightOfAverageAlien][j % strlen(*smallInvaderTwo)];
+                } else if ((i/heightOfAverageAlien + 2) % 3 == 0) {
+                    (*aliensAndShields)[i][j] =  stateOne ? mediumInvaderOne[i % heightOfAverageAlien][j % strlen(*mediumInvaderOne)] : mediumInvaderTwo[i % heightOfAverageAlien][j % strlen(*mediumInvaderTwo)];
+                } else {
+                    (*aliensAndShields)[i][j] =  stateOne ? largeInvaderOne[i % heightOfAverageAlien][j % strlen(*largeInvaderOne)] : largeInvaderTwo[i % heightOfAverageAlien][j % strlen(*largeInvaderTwo)];
+                }
+                
+            }
+            (*aliensAndShields)[i][j] = '\0';
+        }
+        
+        
+        // This is just to draw fill in the rest of the pace
+    if (game -> freeSpaceNeedsRedraw) {
+        for (i = game -> level * heightOfAverageAlien; i < height - shelterHeight - 1; i++) {
+            for (j = 0; j < game -> width - 1; j++) {
+                (*aliensAndShields)[i][j] = ' ';
+            }
+            (*aliensAndShields)[i][j] = '\0';
+        }
+        
+        game -> freeSpaceNeedsRedraw = false;
+    }
 
-        }
-        (*aliensAndShields)[i][j] = '\0';
-    }
-    
-    
-    // This is just to draw fill in the rest of the pace
-    for (i = game -> level * heightOfAverageAlien; i < height - shelterHeight - 1; i++) {
-        for (j = 0; j < game -> width - 1; j++) {
-            (*aliensAndShields)[i][j] = ' ';
-        }
-        (*aliensAndShields)[i][j] = '\0';
-    }
-    
-    
+
     // Next we check to see if the player did shoot and if he did, we draw accordingly
     if (game -> gunner.playerDidShoot) {
-        if (!inBounds(&(game -> gunner.playerShot), game -> width - 1, height - 1)) {
+        if (!inBounds(&game -> gunner.playerShot, game -> width - 1, height - 1)) {
             game -> gunner.playerDidShoot = false;
+//        } else if ((*aliensAndShields)[game -> gunner.playerShot.y][game -> gunner.playerShot.x] == SHOT) {
+//            game -> gunner.playerDidShoot = false;
+//            (*aliensAndShields)[game -> gunner.playerShot.y][game -> gunner.playerShot.x] = ' ';
         } else {
+            // Undo what we did, meaning we replace the shot with the ' ' character and proceed to place it higher
+            // We have to check to make sure this is still in bounds (this only really matter for the initial shot)
+            if (inBounds(&game -> gunner.playerShot, game -> width - 1, height)) {
+                (*aliensAndShields)[game -> gunner.playerShot.y + 1][game -> gunner.playerShot.x] = ' ';
+            }
             (*aliensAndShields)[game -> gunner.playerShot.y][game -> gunner.playerShot.x] = SHOT;
         }
-    
+        
         // because we have already drawn the player's shot, we need to update it for the next frame
         // We subtract because (0,0 is the top left)
         if (updateShot) {

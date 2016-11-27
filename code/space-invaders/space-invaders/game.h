@@ -24,6 +24,9 @@ typedef struct Game {
     
     unsigned char lives, level, score, currentNumberOfAliens;
     int width, height;
+    
+    _Bool headerNeedsUpdate, gunnerNeedsUpdate;
+    _Bool shelterNeedsRedraw, freeSpaceNeedsRedraw;
 } Game;
 
 
