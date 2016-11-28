@@ -42,7 +42,7 @@ void createHeader(Game *game, char** headerLine) {
     char tempString[2];
     
     if (*headerLine == NULL) {
-        *headerLine = malloc(game -> width * sizeof(char));
+        *headerLine = (char*)malloc(game -> width * sizeof(char));
     }
     
     // It's not that expensive to update all of these (well, relatively)
@@ -78,9 +78,9 @@ void createShooter(const CartesianPoint center, Game *game, char*** shooterAscii
     int i, j, shooterCounter;
     
     if (*shooterAscii == NULL) {
-        *shooterAscii = malloc(height * sizeof(char*));
+        *shooterAscii = (char**)malloc(height * sizeof(char*));
         for (i = 0; i < height; i++) {
-            (*shooterAscii)[i] = malloc(game -> width * sizeof(char));
+            (*shooterAscii)[i] = (char*)malloc(game -> width * sizeof(char));
         }
     }
     
@@ -123,9 +123,9 @@ void createGameboard(Game *game, char*** aliensAndShields, const bool stateOne, 
     }
     
     if (*aliensAndShields == NULL) {
-        *aliensAndShields = malloc(height * sizeof(char*));
+        *aliensAndShields = (char**)malloc(height * sizeof(char*));
         for (i = 0; i < height; i++) {
-            (*aliensAndShields)[i] = malloc(game -> width * sizeof(char));
+            (*aliensAndShields)[i] = (char*)malloc(game -> width * sizeof(char));
         }
     }
     
@@ -175,7 +175,7 @@ void createGameboard(Game *game, char*** aliensAndShields, const bool stateOne, 
         
         // This is just to draw fill in the rest of the pace
     if (game -> freeSpaceNeedsRedraw) {
-        for (i = game -> level * heightOfAverageAlien; i < height - shelterHeight - 1; i++) {
+        for (i = game -> level * heightOfAverageAlien; i < height - shelterHeight; i++) {
             for (j = 0; j < game -> width - 1; j++) {
                 (*aliensAndShields)[i][j] = ' ';
             }
@@ -188,18 +188,24 @@ void createGameboard(Game *game, char*** aliensAndShields, const bool stateOne, 
 
     // Next we check to see if the player did shoot and if he did, we draw accordingly
     if (game -> gunner.playerDidShoot) {
-        if (!inBounds(&game -> gunner.playerShot, game -> width - 1, height - 1)) {
+        if (!inBounds(&game -> gunner.playerShot, game -> width, height + 1 ) || game -> gunner.playerShot.y == 0) {
+            // First to check to see if we're in bounds
             game -> gunner.playerDidShoot = false;
-//        } else if ((*aliensAndShields)[game -> gunner.playerShot.y][game -> gunner.playerShot.x] == SHOT) {
-//            game -> gunner.playerDidShoot = false;
-//            (*aliensAndShields)[game -> gunner.playerShot.y][game -> gunner.playerShot.x] = ' ';
-        } else {
+        } else if (game -> gunner.playerShot.y >= height - shelterHeight - 1 && (*aliensAndShields)[game -> gunner.playerShot.y - 1][game -> gunner.playerShot.x] != ' ' && (*aliensAndShields)[game -> gunner.playerShot.y - 1][game -> gunner.playerShot.x] != SHOT) {
+            // Next check to see if we hit shelter. If we did,r stop the shooting at this spot and remove shelter
+            game -> gunner.playerDidShoot = false;
             // Undo what we did, meaning we replace the shot with the ' ' character and proceed to place it higher
             // We have to check to make sure this is still in bounds (this only really matter for the initial shot)
-            if (inBounds(&game -> gunner.playerShot, game -> width - 1, height)) {
-                (*aliensAndShields)[game -> gunner.playerShot.y + 1][game -> gunner.playerShot.x] = ' ';
+            if (inBounds(&game -> gunner.playerShot, game -> width, height)) {
+                (*aliensAndShields)[game -> gunner.playerShot.y][game -> gunner.playerShot.x] = ' ';
             }
-            (*aliensAndShields)[game -> gunner.playerShot.y][game -> gunner.playerShot.x] = SHOT;
+            (*aliensAndShields)[game -> gunner.playerShot.y - 1][game -> gunner.playerShot.x] = ' ';
+        } else {
+            // exact reasoning as the above statement
+            if (inBounds(&game -> gunner.playerShot, game -> width, height)) {
+                (*aliensAndShields)[game -> gunner.playerShot.y][game -> gunner.playerShot.x] = ' ';
+            }
+            (*aliensAndShields)[game -> gunner.playerShot.y - 1][game -> gunner.playerShot.x] = SHOT;
         }
         
         // because we have already drawn the player's shot, we need to update it for the next frame

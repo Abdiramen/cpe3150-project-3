@@ -57,7 +57,7 @@ int main(int argc, const char * argv[]) {
                 if (!game.gunner.playerDidShoot) {
                     game.gunner.playerDidShoot = true;
                     game.gunner.playerShot = game.gunner.center;
-                    game.gunner.playerShot.y -= 4; // we subtract four because zero indexed based and the height of the gunner ship
+                    game.gunner.playerShot.y -= 2; // we subtract four because zero indexed based and the height of the gunner ship
                 }
                 break;
                 
