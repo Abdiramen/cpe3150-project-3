@@ -15,7 +15,7 @@
 #include "constants.h"
 #include "point.h"
 
-static const unsigned char STATE_CHANGE_SHOT = 40;
+static const unsigned int STATE_CHANGE_SHOT_MULTIPLIER = 950;
 
 int main(int argc, const char * argv[]) {
     Game game;
@@ -88,7 +88,7 @@ int main(int argc, const char * argv[]) {
         }
         
         // For the state of the shot, we only want to update ~every someodd iterations
-        if (i % STATE_CHANGE_SHOT == 0) {
+        if (i % 40 == 0) {
             stateOfShot = true;
         } else {
             stateOfShot = false;

@@ -146,34 +146,34 @@ void createGameboard(Game *game, char*** aliensAndShields, const bool stateOne, 
         game -> shelterNeedsRedraw = false;
     }
     
-        // Now the aliens
-        
-        // We start at the height and draw the same row of aliens as there are rows
-        // However, the aliens are typically 2 rows, so have to multiply that by the alien height
-        // We assume all alien heights to be the same
-        
-        // However, the widths don't have to be the same, but we use a heuristic of the small invaders
-        // to truncate the aliens
-        for (i = 0; i < game -> level * heightOfAverageAlien; i++) {
-            for (j = 0; j < game -> width - 1 - (game -> width % strlen(*smallInvaderOne)); j++) {
-                // We need to draw different rows of aliens
-                // Now, we need to draw different aliens, depedending on the rows
-                // So, we basically 'undo' the stretching we did above (on i), then shift (because we can't divide by 0 and dividing by 1 would always return true)
-                // Then we mode by 3 because that's the number aliens, and we compare to a number I put there because the returned numbers baffle me.
-                if ((i/heightOfAverageAlien + 2) % 3  == 2) {
-                    (*aliensAndShields)[i][j] =  stateOne ? smallInvaderOne[i % heightOfAverageAlien][j % strlen(*smallInvaderOne)] : smallInvaderTwo[i % heightOfAverageAlien][j % strlen(*smallInvaderTwo)];
-                } else if ((i/heightOfAverageAlien + 2) % 3 == 0) {
-                    (*aliensAndShields)[i][j] =  stateOne ? mediumInvaderOne[i % heightOfAverageAlien][j % strlen(*mediumInvaderOne)] : mediumInvaderTwo[i % heightOfAverageAlien][j % strlen(*mediumInvaderTwo)];
-                } else {
-                    (*aliensAndShields)[i][j] =  stateOne ? largeInvaderOne[i % heightOfAverageAlien][j % strlen(*largeInvaderOne)] : largeInvaderTwo[i % heightOfAverageAlien][j % strlen(*largeInvaderTwo)];
-                }
-                
+    // Now the aliens
+    
+    // We start at the height and draw the same row of aliens as there are rows
+    // However, the aliens are typically 2 rows, so have to multiply that by the alien height
+    // We assume all alien heights to be the same
+    
+    // However, the widths don't have to be the same, but we use a heuristic of the small invaders
+    // to truncate the aliens
+    for (i = 0; i < game -> level * heightOfAverageAlien; i++) {
+        for (j = 0; j < game -> width - 1 - (game -> width % strlen(*smallInvaderOne)); j++) {
+            // We need to draw different rows of aliens
+            // Now, we need to draw different aliens, depedending on the rows
+            // So, we basically 'undo' the stretching we did above (on i), then shift (because we can't divide by 0 and dividing by 1 would always return true)
+            // Then we mode by 3 because that's the number aliens, and we compare to a number I put there because the returned numbers baffle me.
+            if ((i/heightOfAverageAlien + 2) % 3  == 2) {
+                (*aliensAndShields)[i][j] =  stateOne ? smallInvaderOne[i % heightOfAverageAlien][j % strlen(*smallInvaderOne)] : smallInvaderTwo[i % heightOfAverageAlien][j % strlen(*smallInvaderTwo)];
+            } else if ((i/heightOfAverageAlien + 2) % 3 == 0) {
+                (*aliensAndShields)[i][j] =  stateOne ? mediumInvaderOne[i % heightOfAverageAlien][j % strlen(*mediumInvaderOne)] : mediumInvaderTwo[i % heightOfAverageAlien][j % strlen(*mediumInvaderTwo)];
+            } else {
+                (*aliensAndShields)[i][j] =  stateOne ? largeInvaderOne[i % heightOfAverageAlien][j % strlen(*largeInvaderOne)] : largeInvaderTwo[i % heightOfAverageAlien][j % strlen(*largeInvaderTwo)];
             }
-            (*aliensAndShields)[i][j] = '\0';
+            
         }
-        
-        
-        // This is just to draw fill in the rest of the pace
+        (*aliensAndShields)[i][j] = '\0';
+    }
+    
+    
+    // This is just to draw fill in the rest of the pace
     if (game -> freeSpaceNeedsRedraw) {
         for (i = game -> level * heightOfAverageAlien; i < height - shelterHeight; i++) {
             for (j = 0; j < game -> width - 1; j++) {
@@ -184,8 +184,8 @@ void createGameboard(Game *game, char*** aliensAndShields, const bool stateOne, 
         
         game -> freeSpaceNeedsRedraw = false;
     }
-
-
+    
+    
     // Next we check to see if the player did shoot and if he did, we draw accordingly
     if (game -> gunner.playerDidShoot) {
         if (!inBounds(&game -> gunner.playerShot, game -> width, height + 1 ) || game -> gunner.playerShot.y == 0) {
