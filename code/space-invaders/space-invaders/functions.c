@@ -215,6 +215,19 @@ void createGameboard(Game *game, char*** aliensAndShields, const bool stateOne, 
                 (*aliensAndShields)[game -> gunner.playerShot.y][game -> gunner.playerShot.x] = ' ';
             }
             (*aliensAndShields)[game -> gunner.playerShot.y - 1][game -> gunner.playerShot.x] = ' ';
+        } else if ((*aliensAndShields)[game -> gunner.playerShot.y - 1][game -> gunner.playerShot.x] != ' ' && (*aliensAndShields)[game -> gunner.playerShot.y - 1][game -> gunner.playerShot.x] != SHOT) {
+            // Check to see if the alien is hit. If it is, we set the flag that there is a shot that hit
+            game -> gunner.playerHitAlien = true;
+            // We update the score based on where the shot hit (for the score) and that it needs to be updated
+            game -> score += 50;
+            game -> headerNeedsUpdate = true;
+            game -> gunner.playerDidShoot = false;
+            
+            
+            if (inBounds(&game -> gunner.playerShot, game -> width, height)) {
+                (*aliensAndShields)[game -> gunner.playerShot.y][game -> gunner.playerShot.x] = ' ';
+            }
+        
         } else {
             // exact reasoning as the above statement
             if (inBounds(&game -> gunner.playerShot, game -> width, height)) {
@@ -229,6 +242,8 @@ void createGameboard(Game *game, char*** aliensAndShields, const bool stateOne, 
             (game -> gunner.playerShot.y)--;
         }
     }
+    
+    
 }
 
 void draw(const Game *game, char** header, char*** gameboard, char*** footer) {

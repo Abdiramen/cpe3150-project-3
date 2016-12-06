@@ -14,6 +14,7 @@
 
 typedef struct Shooter {
     _Bool playerDidShoot;
+    _Bool playerHitAlien;
     
     CartesianPoint playerShot;
     CartesianPoint center;
@@ -22,8 +23,8 @@ typedef struct Shooter {
 typedef struct Game {
     Shooter gunner;
     
-    unsigned char lives, level, score, currentNumberOfAliens;
-    int width, height;
+    unsigned char lives, level, currentNumberOfAliens;
+    int width, height, score;
     
     _Bool headerNeedsUpdate, gunnerNeedsUpdate;
     _Bool shelterNeedsRedraw, freeSpaceNeedsRedraw;
