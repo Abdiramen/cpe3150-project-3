@@ -19,7 +19,9 @@
 #include <ncurses.h>
 
 // INITS / DEINITS
+void printDisk();
 void initGame(Game* game);
+
 
 // DRAWING LOGIC
 void createHeader(Game *game, char** headerLine);

@@ -37,6 +37,9 @@ int main(int argc, const char * argv[]) {
     game.gunner.center.x = game.width / 2;
     game.gunner.center.y = game.height - 1;
     
+    printDisk();
+    while (getch() != 's');
+    
     do {
         switch (getch()) {
             case KEY_LEFT:
