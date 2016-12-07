@@ -38,7 +38,7 @@ void printDisk() {
 void initGame(Game* game) {
     getmaxyx(stdscr, game -> height, game -> width);
     
-    game -> level = 1;
+    game -> level = 3;
     game -> lives = 3;
     game -> score = 0;
     
@@ -129,8 +129,13 @@ void createGameboard(Game *game, char*** aliensAndShields, const bool stateOne, 
     // we subtract 1 for the header string and the gunner height becuase this is this the "working canvas"
     static const unsigned char heightOfAverageAlien = sizeof(smallInvaderOne)/sizeof(smallInvaderOne[0]); // static because we assume height to never change
     unsigned char i, j, correctionFactor;
+    static int alienDeleteCount = 1;
     
     unsigned char leftBounds = game -> gunner.alienHitLocation.x - game -> gunner.alienHitLocation.x % strlen(*smallInvaderOne) + 1, rightBounds =  game -> gunner.alienHitLocation.x - game -> gunner.alienHitLocation.x % strlen(*smallInvaderOne) + strlen(*smallInvaderOne) - 1;
+    unsigned char bottomBound = game -> gunner.alienHitLocation.y - 1;
+    unsigned char topBound = bottomBound + heightOfAverageAlien;
+    
+    
     
     if (game -> currentNumberOfAliens == 0) {
         game -> currentNumberOfAliens = game -> level;
@@ -179,10 +184,13 @@ void createGameboard(Game *game, char*** aliensAndShields, const bool stateOne, 
             // Then we mode by 3 because that's the number aliens, and we compare to a number I put there because the returned numbers baffle me.
             if (j + 1 < game -> width - 1 && (*aliensAndShields)[i][j] == ' ') {
                 (*aliensAndShields)[i][j] = ' ';
-            } else if (game -> gunner.playerHitAlien == true && j >= leftBounds && j <= rightBounds) {
+            } else if (game -> gunner.playerHitAlien == true && j >= leftBounds && j <= rightBounds && i <= topBound && i >= bottomBound) {
+                if (alienDeleteCount++ % 250 % 500 == 0) {
                 (*aliensAndShields)[i][j] = ' ';
                 if (j > rightBounds && i > heightOfAverageAlien) {
                     game -> gunner.playerHitAlien = false;
+                    i = 0;
+                }
                 }
             } else {
                 if ((i/heightOfAverageAlien + 2) % 3  == 2) {
@@ -239,6 +247,8 @@ void createGameboard(Game *game, char*** aliensAndShields, const bool stateOne, 
             game -> gunner.alienHitLocation.y = game -> gunner.playerShot.y - 1;
             game -> gunner.alienHitLocation.x = game -> gunner.playerShot.x;
             
+            alienDeleteCount++;
+            
             // Undo what we did
             if (inBounds(&game -> gunner.playerShot, game -> width, height)) {
                 (*aliensAndShields)[game -> gunner.playerShot.y][game -> gunner.playerShot.x] = ' ';
@@ -291,7 +301,7 @@ void draw(const Game *game, char** header, char*** gameboard, char*** footer) {
         printw("%s\n", (*footer)[i]);
     }
     
-    doupdate();
+    refresh();
 }
 
 void dealloc(const Game* game, char* header, char** gameboard, char** footer) {
