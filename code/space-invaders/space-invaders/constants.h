@@ -32,7 +32,7 @@ static const char *smallInvaderOne[] = {
     
 static const char *smallInvaderTwo[] = {
     " {@@} ",
-    "  \\/  " };
+    " \\\\//\  " };
 
 static const char *mediumInvaderOne[] = {
     " /MM\\ ",

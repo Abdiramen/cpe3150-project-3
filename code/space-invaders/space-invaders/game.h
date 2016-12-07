@@ -16,6 +16,9 @@ typedef struct Shooter {
     _Bool playerDidShoot;
     _Bool playerHitAlien;
     
+    unsigned char alienCounter;
+    
+    CartesianPoint alienHitLocation;
     CartesianPoint playerShot;
     CartesianPoint center;
 } Shooter;

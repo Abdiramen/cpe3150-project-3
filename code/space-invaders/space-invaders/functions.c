@@ -128,7 +128,9 @@ void createGameboard(Game *game, char*** aliensAndShields, const bool stateOne, 
     const unsigned char height = game -> height - 1 - sizeof(gunner)/sizeof(*gunner); // read string height to figure out how this works
     // we subtract 1 for the header string and the gunner height becuase this is this the "working canvas"
     static const unsigned char heightOfAverageAlien = sizeof(smallInvaderOne)/sizeof(smallInvaderOne[0]); // static because we assume height to never change
-    unsigned char i, j;
+    unsigned char i, j, correctionFactor;
+    
+    unsigned char leftBounds = game -> gunner.alienHitLocation.x - game -> gunner.alienHitLocation.x % strlen(*smallInvaderOne) + 1, rightBounds =  game -> gunner.alienHitLocation.x - game -> gunner.alienHitLocation.x % strlen(*smallInvaderOne) + strlen(*smallInvaderOne) - 1;
     
     if (game -> currentNumberOfAliens == 0) {
         game -> currentNumberOfAliens = game -> level;
@@ -175,16 +177,26 @@ void createGameboard(Game *game, char*** aliensAndShields, const bool stateOne, 
             // Now, we need to draw different aliens, depedending on the rows
             // So, we basically 'undo' the stretching we did above (on i), then shift (because we can't divide by 0 and dividing by 1 would always return true)
             // Then we mode by 3 because that's the number aliens, and we compare to a number I put there because the returned numbers baffle me.
-            if ((i/heightOfAverageAlien + 2) % 3  == 2) {
-                (*aliensAndShields)[i][j] =  stateOne ? smallInvaderOne[i % heightOfAverageAlien][j % strlen(*smallInvaderOne)] : smallInvaderTwo[i % heightOfAverageAlien][j % strlen(*smallInvaderTwo)];
-            } else if ((i/heightOfAverageAlien + 2) % 3 == 0) {
-                (*aliensAndShields)[i][j] =  stateOne ? mediumInvaderOne[i % heightOfAverageAlien][j % strlen(*mediumInvaderOne)] : mediumInvaderTwo[i % heightOfAverageAlien][j % strlen(*mediumInvaderTwo)];
+            if (j + 1 < game -> width - 1 && (*aliensAndShields)[i][j] == ' ') {
+                (*aliensAndShields)[i][j] = ' ';
+            } else if (game -> gunner.playerHitAlien == true && j >= leftBounds && j <= rightBounds) {
+                (*aliensAndShields)[i][j] = ' ';
+                if (j > rightBounds && i > heightOfAverageAlien) {
+                    game -> gunner.playerHitAlien = false;
+                }
             } else {
-                (*aliensAndShields)[i][j] =  stateOne ? largeInvaderOne[i % heightOfAverageAlien][j % strlen(*largeInvaderOne)] : largeInvaderTwo[i % heightOfAverageAlien][j % strlen(*largeInvaderTwo)];
+                if ((i/heightOfAverageAlien + 2) % 3  == 2) {
+                    (*aliensAndShields)[i][j] =  stateOne ? smallInvaderOne[i % heightOfAverageAlien][j % strlen(*smallInvaderOne)] : smallInvaderTwo[i % heightOfAverageAlien][j % strlen(*smallInvaderTwo)];
+                } else if ((i/heightOfAverageAlien + 2) % 3 == 0) {
+                    (*aliensAndShields)[i][j] =  stateOne ? mediumInvaderOne[i % heightOfAverageAlien][j % strlen(*mediumInvaderOne)] : mediumInvaderTwo[i % heightOfAverageAlien][j % strlen(*mediumInvaderTwo)];
+                } else {
+                    (*aliensAndShields)[i][j] =  stateOne ? largeInvaderOne[i % heightOfAverageAlien][j % strlen(*largeInvaderOne)] : largeInvaderTwo[i % heightOfAverageAlien][j % strlen(*largeInvaderTwo)];
+                }
             }
             
         }
         (*aliensAndShields)[i][j] = '\0';
+        
     }
     
     
@@ -219,15 +231,31 @@ void createGameboard(Game *game, char*** aliensAndShields, const bool stateOne, 
             // Check to see if the alien is hit. If it is, we set the flag that there is a shot that hit
             game -> gunner.playerHitAlien = true;
             // We update the score based on where the shot hit (for the score) and that it needs to be updated
+            // Along with some other flags
             game -> score += 50;
+            game -> gunner.alienCounter = 1;
             game -> headerNeedsUpdate = true;
             game -> gunner.playerDidShoot = false;
+            game -> gunner.alienHitLocation.y = game -> gunner.playerShot.y - 1;
+            game -> gunner.alienHitLocation.x = game -> gunner.playerShot.x;
             
-            
+            // Undo what we did
             if (inBounds(&game -> gunner.playerShot, game -> width, height)) {
                 (*aliensAndShields)[game -> gunner.playerShot.y][game -> gunner.playerShot.x] = ' ';
             }
-        
+            
+            // finally redraw alien
+            if ((*aliensAndShields)[game -> gunner.playerShot.y][game -> gunner.alienHitLocation.x - 1] != ' ' || (*aliensAndShields)[game -> gunner.playerShot.y][game -> gunner.alienHitLocation.x + 1] != ' ') {
+                correctionFactor = 1;
+            } else {
+                correctionFactor = 2;
+            }
+            
+            for (i = 0; i < strlen(*smallInvaderOne); i++) {
+                for (j = 0; j < heightOfAverageAlien; j++) {
+                    (*aliensAndShields)[game -> gunner.playerShot.y + j - correctionFactor][game -> gunner.alienHitLocation.x - game -> gunner.alienHitLocation.x % strlen(*smallInvaderOne) + i] = alienExplode[j][i];
+                }
+            }
         } else {
             // exact reasoning as the above statement
             if (inBounds(&game -> gunner.playerShot, game -> width, height)) {
