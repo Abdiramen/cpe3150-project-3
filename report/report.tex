@@ -4,6 +4,7 @@
 \usepackage{amssymb,amsmath,verbatim,graphicx,microtype,upquote,units,booktabs,hyperref,tikz,wrapfig,xcolor,pgfplots,listings,xcolor}
 \usepackage[binary-units=true]{siunitx}
 \usepackage[margin=10pt, font=small, labelfont=bf, labelsep=endash]{caption}
+\usepackage[os=mac, mackeys=symbols]{menukeys}
 
 \pgfplotsset{compat=1.12}
 \setcounter{secnumdepth}{2}
@@ -31,7 +32,19 @@ For the second project, we were delighted to be able to use a higher level progr
 Below we will go into more detail about each individual parts of our project.
 
 \subsection{The Game}
+The game we initially decided to go with was space invaders. We had intention of doing the game logic on the microcontroller through serial communication; however, we learned early that this was likely not be possible\footnote{Our hex file with very basic functionality was \SI{25}{\kilo\byte}.}. We describe in \textit{Problems Encountered} how we absolved this. From here, we decided our game would exclusively be in the terminal.
 
+Our game essentially creates a two dimensional array (in three segments --- the header to show score and level, the aliens, and the shooter). Then we loop through depending on the input:
+
+\begin{description}
+    \item[\keys{\arrowkeyleft}] Move the shooter left.
+    \item[\keys{\arrowkeyright}] Move the shooter left.
+    \item[\keys{q}] Quits the game
+    \item[\keys{\SPACE}] Shoots with the gunner.
+    \item{\keys{ }} No input meant refresh game.
+\end{description}
+
+We achieved the drawing through curses\footnote{Can be read about here \url{https://en.wikipedia.org/wiki/Curses_(programming_library)}}.
 
 \section{Problems Encountered}
 Below we will list some of the ``several'' problems we ran into.
