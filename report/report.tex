@@ -22,12 +22,16 @@
 For the second project, we were delighted to be able to use a higher level programming language; we\footnote{Illya.} decided to apply this new-found excitement to implement a retro game from the \num{70}s: Space Invaders.
 
 \begin{figure}[!ht]
-    \includegraphics[width=\textwidth]{assets/space-invaders}
+    \includegraphics[width=\textwidth]{assets/space-invaders.jpg}
     \caption{The original space invaders.}
     \label{space-invaders}
 \end{figure}
 
 \section{Project Description}
+Below we will go into more detail about each individual parts of our project.
+
+\subsection{The Game}
+
 
 \section{Problems Encountered}
 Below we will list some of the ``several'' problems we ran into.
@@ -35,26 +39,28 @@ Below we will list some of the ``several'' problems we ran into.
 \subsection{Memory Constraints}
 By far, the biggest problem we encountered was the memory constraint. The \SI{8051} has \SI{8}{\kilo\byte} of memory; our code base, with the exclusion of all the \shellcmd{malloc}s\footnote{Since \shellcmd{unsigned char} = \SI{1}{\byte}, the terminal window will roughly be $20\text{ height} \times 80\text{ width} $, we can roughly expect \SI{1.6}{\kilo\byte} to be allocated on the heap; a non-insignificant amount compared to \SI{8}{\kilo\byte}.}, it is roughly \SI{25}{\kilo\byte} --- a size a bit larger than the \num{8051} allows. Our workaround was to fight fire with fire.
 
-Instead of ``dumbing'' our game down to get it to fit, we decided to have an external interface; specifically, a port sniffer. It would listen for input from the \num{8051}, and if there is a signal on the serial port, use that as input. If not, default to the keyboard input.
+Instead of ``dumbing'' down our game\footnote{According to back of the hand calculations, a space-optimized version of the game would still be \SI{7}{\kilo\byte}. This was likely to be impossible.} to get it to fit, we decided to have an external interface; specifically, a port sniffer. It would listen for input from the \num{8051}, and if there is a signal on the serial port, use that as input. If not, default to the keyboard input.
 
-Ultimately, we were \todo{add what happened with port sniffer.}
+Ultimately, we were unsuccessful with the port sniffer. Originally, we had tried to use a Linux port sniffer so we can just embed it into our program, \shellcmd{slsnif}\footnote{Can be found at \url{https://sourceforge.net/projects/slsnif/}.}. Unfortunately this port sniffer does not support ``legacy'' ports, and the \num{8051} falls in this category. So we moved onto a Windows port sniffer, \shellcmd{Serial Input For Windows}\footnote{Can be found at \url{http://www.randomnoun.com/wp/2013/02/03/serial-input-for-windows/}.}. This too did not work, because we could only have one interface use the serial port, so we would need a dedicated socket to intercept the \shellcmd{COM1} port's input --- something we were not familiar with.
+
+Ultimatly, we were
 
 
 \section{Individual Features}
 \begin{itemize}
-    \item Michael Schoen
+    \item Michael Schoen --- 33\% Contribution
     \begin{itemize}
         \item All Game Sounds
         \item Game Music
     \end{itemize}
 
-    \item Abdirahman Osman
+    \item Abdirahman Osman --- 33\% Contribution
     \begin{itemize}
         \item Port Serialization
         \item Menu Logic
     \end{itemize}
 
-    \item Illya Starikov
+    \item Illya Starikov --- 33\% Contribution
     \begin{itemize}
         \item Space Invaders Game
     \end{itemize}
