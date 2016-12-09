@@ -41,10 +41,25 @@ Our game essentially creates a two dimensional array (in three segments --- the 
     \item[\keys{\arrowkeyright}] Move the shooter left.
     \item[\keys{q}] Quits the game
     \item[\keys{\SPACE}] Shoots with the gunner.
-    \item{\keys{ }} No input meant refresh game.
+    \item[\keys{ }] No input meant refresh game.
 \end{description}
 
-We achieved the drawing through curses\footnote{Can be read about here \url{https://en.wikipedia.org/wiki/Curses_(programming_library)}}.
+We achieved the drawing through curses\footnote{Can be read about here \url{https://en.wikipedia.org/wiki/Curses_(programming_library)}}. Ultimately, we did not get our game fully done, but a good majority of it.
+
+\begin{figure}[!ht]
+    \includegraphics[width=\textwidth]{assets/game.png}
+    \caption{Text Invaders, our version of space invaders..}
+    \label{game}
+\end{figure}
+
+\subsection{Music}
+The formula for each note is $$\frac{\nicefrac{1}{4} \, \text{Oscillator Frequency}}{\text{Note Frequency}}$$. To produce the music, we had a function that took in which note and the type of note (\num{16}\textsuperscript{th}, \num{8}\textsuperscript{th}, \num{4}\textsuperscript{th}, half or whole note). The function multiplied the base length of a note by a constant depending on the type of note. A \num{16}\textsuperscript{th} note would be multiplied by \num{1}, an \num{8}\textsuperscript{th} by \num{2}, a quarter note by \num{4}, a half-note by \num{8}, and a whole note by \num{16}. We used timers and interrupts for the period of the note and the length of the note.
+
+We used sheet music to get the notes. For speeding and slowing down the music, the type of note was just multiplied by \num{2} or divided by \num{2} respectively.
+
+\subsection{Seven Segment Display}
+For the seven segment display, we had to set $P_2$ to be push/pull so that the display would receive enough power. We then looked up the correct values to output to the pins to make each number show up on the display and used those values in the increment/decremented function as well as the simple function that lets you display any number. We used the data sheet for the seven segment display to see how to connect it on the breadboard.
+
 
 \section{Problems Encountered}
 Below we will list some of the ``several'' problems we ran into.
@@ -63,8 +78,8 @@ Ultimatly, we were
 \begin{itemize}
     \item Michael Schoen --- 33\% Contribution
     \begin{itemize}
-        \item All Game Sounds
-        \item Game Music
+        \item Song
+        \item Seven Segment Display
     \end{itemize}
 
     \item Abdirahman Osman --- 33\% Contribution
@@ -76,6 +91,7 @@ Ultimatly, we were
     \item Illya Starikov --- 33\% Contribution
     \begin{itemize}
         \item Space Invaders Game
+        \item Keyboard
     \end{itemize}
 \end{itemize}
 
