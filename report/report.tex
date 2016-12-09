@@ -45,6 +45,8 @@ For the second project, we were delighted to be able to use a higher level progr
     \label{space-invaders}
 \end{figure}
 
+When this idea came crashing and burning down to the ground, we decided to combat this with a additional music, an elegant user interface, and a keyboard (with some other miscellanies).
+
 \section{Project Description}
 Below we will go into more detail about each individual parts of our project.
 
@@ -61,7 +63,7 @@ Our game essentially creates a two dimensional array (in three segments --- the 
     \item[\keys{ }] No input meant refresh game.
 \end{description}
 
-We achieved the drawing through curses\footnote{Can be read about here \url{https://en.wikipedia.org/wiki/Curses_(programming_library)}}. Ultimately, we did not get our game fully done, but a good majority of it.
+We achieved the drawing through \shellcmd{curses}\footnote{Can be read about here \url{https://en.wikipedia.org/wiki/Curses_(programming_library)}}. Ultimately, we did not get our game fully done, but a good majority of it. See Figure. \ref{game} for a look at the UI of the game.
 
 \begin{figure}[!ht]
     \includegraphics[width=\textwidth]{assets/game.png}
@@ -80,18 +82,18 @@ The formula for each note is $$\frac{\nicefrac{1}{4} \, \text{Oscillator Frequen
 
 To produce the music, we had a function that took in which note and the type of note (\num{16}\textsuperscript{th}, \num{8}\textsuperscript{th}, \num{4}\textsuperscript{th}, half or whole note). The function multiplied the base length of a note by a constant depending on the type of note. A \num{16}\textsuperscript{th} note would be multiplied by \num{1}, an \num{8}\textsuperscript{th} by \num{2}, a quarter note by \num{4}, a half-note by \num{8}, and a whole note by \num{16}. We used timers and interrupts for the period of the note and the length of the note.
 
-We used sheet music to get the notes. For speeding and slowing down the music, the type of note was just multiplied by \num{2} or divided by \num{2} respectively.
+We also used sheet music to get the notes. For speeding and slowing down the music, the type of note was just multiplied by \num{2} or divided by \num{2} respectively.
 
 \subsection{Interactive User Interface}
 The menu goes through three stages; printing the pen-rose triangle background, printing options, then allowing the selection of items. The following are printed
 
-\begin{itemize}
+\begin{enumerate}
     \item Counter
     \item Hurricane's Eye
     \item Keyboard
-\end{itemize}
+\end{enumerate}
 
-\noindent respectively. From there the user has the option to to cycle upwards using $P_2$ (see Figure. \ref{menu}), cycle down using $P_8$, or select using $P_5$. The cycle starts with 1 highlighting Counter if $P_2$ is pressed then Hurricane's eye will be highlighted, and if printed once again Counter will be selected. If the menu user presses $P_1$ once at the 3rd option (Keyboard) then the menu will cycle back to option 1 and vis versa if $P_8$ were clicked at the 1st option. Selecting an menu option with $P_5$ while highlighted will start its respective function. Also each menu option has a corresponding number displayed on a seven segment display.
+\noindent respectively. From there the user has the option to to cycle upwards using $P_2$ (see Figure. \ref{menu}), cycle down using $P_8$, or select using $P_5$. The cycle starts with \num{1}, highlighting Counter if $P_2$ is pressed, then Hurricane's eye will be highlighted, and if printed once again Counter will be selected. If the menu user presses $P_1$ once at the 3rd option (Keyboard) then the menu will cycle back to option \num{1} and vice versa if $P_8$ were clicked at the 1st option. Selecting an menu option with $P_5$ while highlighted will start its respective function. Also each menu option has a corresponding number displayed on a seven segment display.
 
 \begin{figure}[!ht]
     \centering
@@ -153,7 +155,7 @@ For this project, we made sure to utilize the additional functionality we learne
 We spent a great deal of time with the serial communication aspect of the board; we took advantage of this the most (with respect to the \num{8051} architecture). We have already discussed the things that made our board unique; however, we will show an example of how our implimination of \shellcmd{curses}.
 
 \begin{lstlisting}[style=cC]
-void move(unsigned char y, unsigned char x){
+void move(unsigned char y, unsigned char x) {
 	unsigned char i; // counter
 	zero_cursor(); // moves the code to (0, 0)
 
@@ -166,10 +168,10 @@ void move(unsigned char y, unsigned char x){
 }
 \end{lstlisting}
 
-Now combining that with \shellcmd{addch(char)},
+\noindent Now combining that with \shellcmd{addch(char)},
 
 \begin{lstlisting}[style=cC]
-void addch(unsigned char value){
+void addch(unsigned char value) {
 	uart_isr();
 	uart_transmit(value);
 	while(TI==0);
@@ -215,5 +217,8 @@ void delay1ms() {
         \item Keyboard
     \end{itemize}
 \end{itemize}
+
+\centering
+\Huge Happy Holidays \\ From Michael, Abdirahman, and Illya!
 
 \end{document}
