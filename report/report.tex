@@ -1,7 +1,7 @@
 \RequirePackage[l2tabu, orthodox]{nag}
 \documentclass[12pt]{article}
 
-\usepackage{amssymb,amsmath,verbatim,graphicx,microtype,upquote,units,booktabs,hyperref,tikz,wrapfig,xcolor,pgfplots,listings,xcolor}
+\usepackage{amssymb,amsmath,verbatim,graphicx,microtype,upquote,units,booktabs,hyperref,tikz,wrapfig,pgfplots,listings,xcolor,tikz,pgfplots}
 \usepackage[binary-units=true]{siunitx}
 \usepackage[margin=10pt, font=small, labelfont=bf, labelsep=endash]{caption}
 \usepackage[os=mac, mackeys=symbols]{menukeys}
@@ -16,6 +16,8 @@
 \newcommand{\shellcmd}[1]{\texttt{\colorbox{gray!30}{#1}}}
 \newcommand{\todo}[1]{\textbf{\colorbox{red!50}{#1}}}
 \newcommand{\br}{\\\multicolumn{2}{c}{} \\ }
+
+\definecolor{amber}{rgb}{1.0, 0.75, 0.0}
 
 \begin{document}
 \maketitle
@@ -53,13 +55,58 @@ We achieved the drawing through curses\footnote{Can be read about here \url{http
 \end{figure}
 
 \subsection{Music}
-The formula for each note is $$\frac{\nicefrac{1}{4} \, \text{Oscillator Frequency}}{\text{Note Frequency}}$$. To produce the music, we had a function that took in which note and the type of note (\num{16}\textsuperscript{th}, \num{8}\textsuperscript{th}, \num{4}\textsuperscript{th}, half or whole note). The function multiplied the base length of a note by a constant depending on the type of note. A \num{16}\textsuperscript{th} note would be multiplied by \num{1}, an \num{8}\textsuperscript{th} by \num{2}, a quarter note by \num{4}, a half-note by \num{8}, and a whole note by \num{16}. We used timers and interrupts for the period of the note and the length of the note.
+The formula for each note is $$\frac{\nicefrac{1}{4} \, \text{Oscillator Frequency}}{\text{Note Frequency}}$$ So for supposing we want to produce the note $C4$,
+
+\begin{equation}
+    \frac{\nicefrac{1}{4} \, \text{Oscillator Frequency}}{\text{Note Frequency}} =
+    \frac{\nicefrac{1}{4} \cdot \SI{7.373}{\hertz}}{\SI{261.63}{\hertz}} =
+    \SI{7.045}{\milli\second}
+\end{equation}
+
+To produce the music, we had a function that took in which note and the type of note (\num{16}\textsuperscript{th}, \num{8}\textsuperscript{th}, \num{4}\textsuperscript{th}, half or whole note). The function multiplied the base length of a note by a constant depending on the type of note. A \num{16}\textsuperscript{th} note would be multiplied by \num{1}, an \num{8}\textsuperscript{th} by \num{2}, a quarter note by \num{4}, a half-note by \num{8}, and a whole note by \num{16}. We used timers and interrupts for the period of the note and the length of the note.
 
 We used sheet music to get the notes. For speeding and slowing down the music, the type of note was just multiplied by \num{2} or divided by \num{2} respectively.
+
+\subsection{Interactive User Interface}
+The menu goes through three stages; printing the pen-rose triangle background, printing options, then allowing the selection of items. The following are printed
+
+\begin{itemize}
+    \item Counter
+    \item Hurricane's Eye
+    \item Keyboard
+\end{itemize}
+
+\noindent respectively. From there the user has the option to to cycle upwards using $P_2$ (see Figure. \ref{menu}), cycle down using $P_8$, or select using $P_5$. The cycle starts with 1 highlighting Counter if $P_2$ is pressed then Hurricane's eye will be highlighted, and if printed once again Counter will be selected. If the menu user presses $P_1$ once at the 3rd option (Keyboard) then the menu will cycle back to option 1 and vis versa if $P_8$ were clicked at the 1st option. Selecting an menu option with $P_5$ while highlighted will start its respective function. Also each menu option has a corresponding number displayed on a seven segment display.
+
+\begin{figure}[!ht]
+    \centering
+    \begin{tikzpicture}
+        \node[draw,circle,minimum size=1cm,fill=red,inner sep=0pt] (1) at (0,4) {$P_1$};
+        \node[draw,circle,minimum size=1cm,fill=yellow,inner sep=0pt] (2) at (2,4) {$P_2$};
+        \node[draw,circle,minimum size=1cm,fill=green,inner sep=0pt] (3) at (4,4) {$P_3$};
+
+        \node[draw,circle,minimum size=1cm,fill=amber,inner sep=0pt] (4) at (0,2) {$P_4$};
+        \node[draw,circle,minimum size=1cm,fill=blue,inner sep=0pt] (5) at (2,2) {$P_5$};
+        \node[draw,circle,minimum size=1cm,fill=red,inner sep=0pt] (6) at (4,2) {$P_6$};
+
+        \node[draw,circle,minimum size=1cm,fill=yellow,inner sep=0pt] (7) at (0,0) {$P_7$};
+        \node[draw,circle,minimum size=1cm,fill=green,inner sep=0pt] (8) at (2,0) {$P_8$};
+        \node[draw,circle,minimum size=1cm,fill=amber,inner sep=0pt] (9) at (4,0) {$P_9$};
+    \end{tikzpicture}
+    \caption{The Main Menu.}
+    \label{menu}
+\end{figure}
 
 \subsection{Seven Segment Display}
 For the seven segment display, we had to set $P_2$ to be push/pull so that the display would receive enough power. We then looked up the correct values to output to the pins to make each number show up on the display and used those values in the increment/decremented function as well as the simple function that lets you display any number. We used the data sheet for the seven segment display to see how to connect it on the breadboard.
 
+\subsection{Keyboard}
+Our keyboard has a C scale set to switches $P_1 \cdots P_8$ with $P_9$ escaping to the menu. Each switch uses the corresponding light associated with its position save $P_9$ which is the escape button.
+
+\subsection{Curses}
+In order to print to any part of the screen we needed to implement a structure to send ANSI control sequences and characters to the terminal using \shellcmd{uart\_get()} as a base. To do this we implemented an \num{8051} port of curses that takes in $(x,\, y)$ coordinates as arguments for printing \shellcmd{chars} and \shellcmd{strings} at any defined $(x,\, y)$ location. This allows for the implementation of the menu since it requires printing of options in sometimes nonlinear fashion.
+
+We spent a great deal of time with the serial communication aspect of the board. With this we found a whole host of issues associated with printing characters to a terminal, printing to an arbitrary location, control sequences, fluctuation in crystal timings, and requesting information from a terminal.
 
 \section{Problems Encountered}
 Below we will list some of the ``several'' problems we ran into.
@@ -71,8 +118,13 @@ Instead of ``dumbing'' down our game\footnote{According to back of the hand calc
 
 Ultimately, we were unsuccessful with the port sniffer. Originally, we had tried to use a Linux port sniffer so we can just embed it into our program, \shellcmd{slsnif}\footnote{Can be found at \url{https://sourceforge.net/projects/slsnif/}.}. Unfortunately this port sniffer does not support ``legacy'' ports, and the \num{8051} falls in this category. So we moved onto a Windows port sniffer, \shellcmd{Serial Input For Windows}\footnote{Can be found at \url{http://www.randomnoun.com/wp/2013/02/03/serial-input-for-windows/}.}. This too did not work, because we could only have one interface use the serial port, so we would need a dedicated socket to intercept the \shellcmd{COM1} port's input --- something we were not familiar with.
 
-Ultimatly, we were
+Ultimately, we were simply unsuccessful and had to scrap this.
 
+\subsection{Printing Lines and Columns.}
+We had an issue with the timing crystals of the Simon board where the board heating up would cause the serial port to start printing unrecognizable characters. This lead us to think we were causing a segfault when we was printing string literals. This caused hours of wasted time since nothing we could change would cause the board to start printing what we wanted, but one afternoon after hours of exhaustive research and help at the lead sessions the conclusion was reached that heat changes were causing the board to lose its timing and print out nonsense. The fix for this was to let the board cool off while writing code. After this change garbage outputs dropped significantly.
+
+\subsection{Seven Segment Display Buttons}
+One problem we ran into was some of the buttons use the same pins as we used for the seven segment display. The display used push/pull which makes the buttons not work, so we had to carefully chose buttons that didn't use the same pins.
 
 \section{Individual Features}
 \begin{itemize}
@@ -85,7 +137,8 @@ Ultimatly, we were
     \item Abdirahman Osman --- 33\% Contribution
     \begin{itemize}
         \item Port Serialization
-        \item Menu Logic
+        \item Text User Interface
+        \item Menu
     \end{itemize}
 
     \item Illya Starikov --- 33\% Contribution
