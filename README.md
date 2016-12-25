@@ -1,5 +1,5 @@
 # Project III — CpE 3150
-This is the third and final project for Computer Engineering 3150, Introduction to Introduction to Microcontrollers and Embedded Systems at Missouri University of Science and Technology. The formal description can be found under *assets/CpE 3150 - Project 3.pdf*. Although this can serve as a reference, because of the teacher’s transfer and hardware being replaced, this code verbatim cannot be used.
+This is the third and final project for Computer Engineering 3150, *Introduction to Microcontrollers and Embedded Systems* at Missouri University of Science and Technology. The formal description can be found under *assets/CpE 3150 - Project 3.pdf*. Although this can serve as a reference, because of the teacher’s transfer and hardware being replaced, this code verbatim cannot be used.
 
 The hardware required to run the code is an [8051 microcontroller](https://en.wikipedia.org/wiki/Intel_MCS-51). The only required software is a GCC compiler; however, to alter code related to the microcontroller, [Kiel](https://www.keil.com) and [Flash Magic](http://www.flashmagictool.com) is required. 
 
