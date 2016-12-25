@@ -85,6 +85,14 @@ To produce the music, we had a function that took in which note and the type of 
 We also used sheet music to get the notes. For speeding and slowing down the music, the type of note was just multiplied by \num{2} or divided by \num{2} respectively.
 
 \subsection{Interactive User Interface}
+
+\begin{figure}[!ht]
+    \centering
+    \includegraphics[width=.5\textwidth]{assets/menu}
+    \caption{The pen-rose style menu.}
+    \label{penrose}
+\end{figure}
+
 The menu goes through three stages; printing the pen-rose triangle background, printing options, then allowing the selection of items. The following are printed
 
 \begin{enumerate}
@@ -127,7 +135,7 @@ For the seven segment display, we had to set $P_2$ to be push/pull so that the d
 Our keyboard has a C scale set to switches $P_1 \cdots P_8$ with $P_9$ escaping to the menu. Each switch uses the corresponding light associated with its position save $P_9$ which is the escape button.
 
 \subsection{Curses}
-In order to print to any part of the screen we needed to implement a structure to send ANSI control sequences and characters to the terminal using \shellcmd{uart\_get()} as a base. To do this we implemented an \num{8051} port of curses that takes in $(x,\, y)$ coordinates as arguments for printing \shellcmd{chars} and \shellcmd{strings} at any defined $(x,\, y)$ location. This allows for the implementation of the menu since it requires printing of options in sometimes nonlinear fashion.
+In order to print to any part of the screen we needed to implement a structure to send ANSI control sequences and characters to the terminal using \shellcmd{uart\_get()} as a base. To do this we implemented an \num{8051} port of curses that takes in $(y,\, x)$ coordinates as arguments for printing \shellcmd{chars} and \shellcmd{strings} at any defined $(x,\, y)$ location. This allows for the implementation of the menu since it requires printing of options in sometimes nonlinear fashion.
 
 We found a whole host of others issues associated with printing characters to a terminal, printing to an arbitrary location, control sequences, fluctuation in crystal timings, and requesting information from a terminal. We accounted for these individually.
 
@@ -144,7 +152,7 @@ Ultimately, we were unsuccessful with the port sniffer. Originally, we had tried
 Ultimately, we were simply unsuccessful and had to scrap this.
 
 \subsection{Printing Lines and Columns.}
-We had an issue with the timing crystals of the Simon board where the board heating up would cause the serial port to start printing unrecognizable characters. This lead us to think we were causing a segfault when we was printing string literals. This caused hours of wasted time since nothing we could change would cause the board to start printing what we wanted, but one afternoon after hours of exhaustive research and help at the lead sessions the conclusion was reached that heat changes were causing the board to lose its timing and print out nonsense. The fix for this was to let the board cool off while writing code. After this change garbage outputs dropped significantly.
+We had an issue with the timing crystals of the Simon board where the board heating up would cause the serial port to start printing unrecognizable characters. This lead us to think we were causing a segfault when we were printing string literals. This caused hours of wasted time since nothing we could change would cause the board to start printing what we wanted, but one afternoon after hours of exhaustive research and help at the lead sessions the conclusion was reached that heat changes were causing the board to lose its timing and print out nonsense. The fix for this was to let the board cool off while writing code. After this change garbage outputs dropped significantly.
 
 \subsection{Seven Segment Display Buttons}
 One problem we ran into was some of the buttons use the same pins as we used for the seven segment display. The display used push/pull which makes the buttons not work, so we had to carefully chose buttons that didn't use the same pins.
@@ -178,7 +186,7 @@ void addch(unsigned char value) {
 }
 \end{lstlisting}
 
-\noindent we have a fundamental a functionality to \shellcmd{curses}, printing anywhere!
+\noindent we now have a fundamental idea to \shellcmd{curses}, printing anywhere!
 
 Next, we implemented all delays with timer interrupts. For example,
 
